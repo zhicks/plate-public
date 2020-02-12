@@ -1,0 +1,308 @@
+@import 'variables';
+@import 'semantic-overrides';
+
+body {
+  background: white;
+}
+
+.background-masthead-gradient {
+  width: 100%;
+  height: 100px;
+  background: rgba(16, 47, 70, .26);
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 90;
+  background-image: -moz-radial-gradient(closest-corner, rgba(16, 47, 70, 0) 60%, rgba(16, 47, 70, .26)), -moz-linear-gradient(108deg, #26d0ce, #1a2980 90%);
+  background-image: -o-radial-gradient(closest-corner, rgba(16, 47, 70, 0) 60%, rgba(16, 47, 70, .26)), -o-linear-gradient(108deg, #26d0ce, #1a2980 90%);
+  background-image: -webkit-radial-gradient(closest-corner, rgba(16, 47, 70, 0) 60%, rgba(16, 47, 70, .26)), -webkit-linear-gradient(108deg, #26d0ce, #1a2980 90%);
+  background-image: radial-gradient(closest-corner, rgba(16, 47, 70, 0) 60%, rgba(16, 47, 70, .26)), -webkit-linear-gradient(108deg, #26d0ce, #1a2980 90%);
+  opacity: 0;
+
+  // Animate using CSS only
+  // background: -moz-radial-gradient(closest-corner, rgba(16, 47, 70, 0) 60%, rgba(16, 47, 70, .26)), -moz-linear-gradient(108deg, #26d0ce, #1a2980 90%) !important;
+  // background: -o-radial-gradient(closest-corner, rgba(16, 47, 70, 0) 60%, rgba(16, 47, 70, .26)), -o-linear-gradient(108deg, #26d0ce, #1a2980 90%) !important;
+  // background: -webkit-radial-gradient(closest-corner, rgba(16, 47, 70, 0) 60%, rgba(16, 47, 70, .26)), -webkit-linear-gradient(108deg, #26d0ce, #1a2980 90%) !important;
+  // background: radial-gradient(closest-corner, rgba(16, 47, 70, 0) 60%, rgba(16, 47, 70, .26)), linear-gradient(108deg, #26d0ce, #1a2980 90%) !important;
+
+  // background-size: 400% 400%;
+  // -webkit-animation: AnimationName 3s ease-out 0.5s 1;
+  // -moz-animation: AnimationName 3s ease-out 0.5s 1;
+  // -o-animation: AnimationName 3s ease-out 0.5s 1;
+  // animation: AnimationName 3s ease-out 0.5s 1;
+
+  // -webkit-animation-fill-mode: forwards;
+  // animation-fill-mode: forwards;
+
+  // @-webkit-keyframes AnimationName {
+  //   from { opacity: 0; }
+  //   to { opacity: 1; }
+  // }
+
+  // @-moz-keyframes AnimationName {
+  //   from { opacity: 0; }
+  //   to { opacity: 1; }
+  // }
+
+  // @-o-keyframes AnimationName {
+  //   from { opacity: 0; }
+  //   to { opacity: 1; }
+  // }
+
+  // @keyframes AnimationName {
+  //   from { opacity: 0; }
+  //   to { opacity: 1; }
+  // }
+}
+
+.background-mastheader-backcolor {
+  width: 100%;
+  height: 100px;
+  background: #1B1C1D;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 89;
+}
+
+.front-page-detail-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  @media (max-width: 600px) {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .left {
+    .title {
+      font-size: 3rem;
+    }
+
+    .details {
+      font-size: 2rem;
+      padding-right: 4rem;
+
+      @media (max-width: 600px) {
+        padding-bottom: 3rem;
+      }
+    }
+  }
+
+  .right {
+    img {
+    }
+  }
+}
+
+.plate-title {
+  font-weight: 900; 
+  font-size: 2.5rem; 
+  display: flex; 
+  align-items:center; 
+  justify-content: center;
+}
+.plate-alpha-claimer {
+  font-size: 1rem;
+  /* margin-top: -1rem; */
+  padding-left: 0.5rem;
+  font-weight: normal;
+}
+.plate-subtitle {
+  font-size: 2rem; 
+  padding: 1rem 0 2rem 0;
+}
+
+.plate-masthead {
+  z-index: 91;
+}
+
+svg {
+  width: 25rem;
+  height: 100%;
+}
+
+svg .plate-svg {
+  fill: #fff;
+}
+
+.top-logo {
+  padding-top: 2rem;
+}
+
+.hidden.menu {
+  display: none !important;
+}
+
+.nav.segment {
+  min-height: 80px;
+  padding: 1em 0em;
+}
+
+.nav .ui.menu .ui.button {
+  margin-left: 0.5em;
+}
+
+.masthead.segment {
+  min-height: 640px;
+  padding: 4rem 0rem 2rem 0rem;
+}
+
+.masthead .logo.item img {
+  margin-right: 1em;
+}
+
+.masthead h1.ui.header {
+  margin-top: 0;
+  margin-bottom: 0em;
+  font-size: 4em;
+  font-weight: normal;
+}
+
+.masthead h2 {
+  font-size: 1.7em;
+  font-weight: normal;
+}
+
+.ui.vertical.stripe {
+  padding: 5em 0em;
+}
+
+.ui.vertical.stripe h3 {
+  font-size: 2em;
+}
+
+.ui.vertical.stripe .button + h3,
+.ui.vertical.stripe p + h3 {
+  margin-top: 3em;
+}
+
+.ui.vertical.stripe .floated.image {
+  clear: both;
+}
+
+.ui.vertical.stripe p {
+  font-size: 1.33em;
+}
+
+.ui.vertical.stripe .horizontal.divider {
+  margin: 3em 0em;
+}
+
+.ui.vertical.stripe.alternate {
+  background: #FAFAFA;
+}
+.quote.stripe.segment {
+  padding: 0em;
+}
+
+.quote.stripe.segment .grid .column {
+  padding-top: 5em;
+  padding-bottom: 5em;
+}
+
+.footer.segment {
+  padding: 5em 0em 2em;
+}
+
+.secondary.pointing.menu .toc.item {
+  display: none;
+}
+
+.legal.masthead.segment {
+  min-height: 80px !important;
+}
+
+.legal.stripe.segment p {
+  font-size: 1.1rem;
+}
+
+.legal.ui.vertical.stripe {
+  padding: 1.75rem 0em;
+}
+
+.legal.ui.vertical.stripe h3 {
+  font-size: 1.75rem;
+}
+
+.legal.ui.vertical.stripe .button + h3,
+.legal.ui.vertical.stripe p + h3 {
+  margin-top: 0em;
+}
+
+.outside-page.masthead.segment {
+  min-height: 120px !important;
+}
+
+.outside-page.stripe.segment {
+  min-height: 350px;
+}
+
+.outside-page.stripe.segment p {
+  font-size: 1.1rem;
+}
+
+.outside-page.ui.vertical.stripe {
+  padding: 1.75rem 0em;
+}
+
+.outside-page.ui.vertical.stripe h3 {
+  font-size: 1.75rem;
+}
+
+.outside-page.ui.vertical.stripe .button + h3,
+.outside-pageui.vertical.stripe p + h3 {
+  margin-top: 0em;
+}
+
+.ui.text.left.aligned.container {
+  padding-bottom: 5rem;
+}
+
+@media only screen and (max-width: 700px) {
+  svg {
+    width: 15rem;
+  }
+
+  .secondary.pointing.menu .item,
+  .secondary.pointing.menu .menu {
+    display: none;
+  }
+
+  .secondary.pointing.menu .toc.item {
+    display: block;
+  }
+
+  .masthead.segment {
+    min-height: 350px;
+  }
+
+  .masthead h1.ui.header {
+    font-size: 2em;
+    margin-top: 1.5em;
+  }
+
+  .masthead h2 {
+    margin-top: 0.5em;
+    font-size: 1.5em;
+  }
+
+  // .right.item > .button.hidden {
+  //   display: none;
+  // }
+}
+
+@media only screen and (max-width: 768px) {
+  .secondary.pointing.menu .right.item > .button.hidden {
+    display: none;
+  }
+}
+
+@media only screen and (min-width: 1200px) {
+  .ui.container.plate-nav {
+    width: 1127px;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}

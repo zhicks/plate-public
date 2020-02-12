@@ -1,0 +1,186 @@
+<div class="plate-wrapper" p-sch>
+    <div plate-head-wrapper p-d-handle="1" [attr.p-d-disable]="base.docked ? 'true' : null" class="plate-head-wrapper" [style.background]="base.model.color" (mouseover)="base.hoveringOverHeader = true" (mouseout)="base.hoveringOverHeader = false" (click)="plateHeaderClicked($event)">
+        <div p-d-handle="1" class="left-wrapper">
+            <span class="docked-indicator" [hidden]="!base.docked || base.minimized">Docked</span>
+            <div p-d-handle="1" class="icon-wrapper" [hidden]="editingTitleAdHoc">
+                <!--<img p-d-handle="1" class="plate-head-icon" src="/shared/assets/images/logo_plate_small.png">-->
+                <div p-d-handle="1" *ngIf="mode === PlateMode.Default" class="plate-head-icon font-awesome"><i class="search icon"></i></div>
+                <div p-d-handle="1" *ngIf="mode === PlateMode.Settings" class="plate-head-icon left-arrow-wrapper" style="display: flex; align-items: center;" (click)="leftArrowBackClicked()">
+                    <i class="left arrow icon"></i>
+                </div>
+            </div>
+            <div p-d-handle="1" class="plate-head-title-wrapper">
+                <span p-d-handle="1">{{base.model.name}}</span>
+            </div>
+        </div>
+        <div p-d-handle="1" class="right-wrapper">
+            <div class="plate-actions-wrapper" [hidden]="!base.docked && (editingTitleAdHoc || !base.hoveringOverHeader)">
+                <div p-d-handle="1" header-button-wrapper class="header-button-wrapper" (click)="plateSettingsIconClicked()" [ngClass]="{selected: mode === PlateMode.Settings}" [hidden]="base.minimized">
+                    <i p-d-handle="1" class="setting icon"></i>
+                </div>
+                <div p-d-handle="1" header-button-wrapper class="header-button-wrapper" (click)="pinPlateClicked()" style="display: none"> <!-- [hidden]="base.docked" -->
+                    <i p-d-handle="1" class="pin icon"></i>
+                </div>
+                <div p-d-handle="1" header-button-wrapper class="header-button-wrapper" (click)="dockPlateClicked()" [hidden]="base.minimized">
+                    <i p-d-handle="1" class="icon" [ngClass]="base.docked ? 'expand' : 'compress'"></i>
+                </div>
+                <div p-d-handle="1" header-button-wrapper class="header-button-wrapper" (click)="minimizePlateClicked()">
+                    <i p-d-handle="1" class="icon" [ngClass]="base.minimized ? 'chevron up' : 'minus'"></i>
+                </div>
+            </div>
+            <div p-d-handle="1" header-button-wrapper class="header-button-wrapper plate-head-close-wrapper" (click)="closePlateClicked()">
+                <div p-d-handle="1" class="close-icon-wrapper">
+                    <i p-d-handle="1" class="icon remove"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="plate-content-wrapper" p-sch plate-content-wrapper [hidden]="base.minimized">
+        <div class="plate-top-most-detail-wrapper">
+            <div class="left-wrapper">
+                <i class="idea icon" style="font-size: 1rem;"></i> DYNAMIC PLATE
+            </div>
+            <div class="right-wrapper">
+                <span class="ui-plate text-button small link" (click)="rerunQueryClicked()"><i class="search icon"></i> Re-run Query</span>
+            </div>
+        </div>
+        <div class="plate-top-detail-wrapper" *ngIf="base.platter">
+            <div class="platter-name inline-detail-wrapper">
+                {{base.platter.model.name}}
+            </div>
+            <div class="inline-detail-wrapper">
+                <div [hidden]="!base.platter.team"><i class="users icon"></i>{{base.platter.team && base.platter.team.model.name}}</div>
+                <div [hidden]="base.platter.team"><i class="user icon"></i>Private</div>
+            </div>
+        </div>
+        <div class="plate-default" *ngIf="mode === PlateMode.Default">
+            <div class="plate-subsection-wrapper" *ngFor="let searchObject of searchService.getSearchObjects()">
+                <div class="plate-subsection-title-wrapper">
+                    <div class="plate-subsection-title default-plate ">
+                        {{searchObject.name}}
+                    </div>
+                    <div style="font-size: 0.8rem; padding-left: 0.7rem;" [hidden]="searchObject.type === ClientConnectedAppType.Gmail">{{searchService.getMin(constants.defaultSearchResultCount, searchObject.resultSizeEstimate)}} of {{searchObject.resultSizeEstimate}}</div>
+                    <div style="font-size: 0.8rem; padding-left: 0.7rem;" [hidden]="searchObject.type !== ClientConnectedAppType.Gmail">Showing {{constants.defaultSearchResultCount}} Results</div>
+                </div>
+                <div class="plate-subsection-content-wrapper" [ngClass]="{empty: !searchObject.results.length}">
+                    <div style="text-align:center;color:#AAA;font-style:italic;" *ngIf="!searchObject.results.length">
+                        No Results
+                    </div>
+                    <div class="plate-item-wrapper search-result search-result-dropdown-wrapper" *ngFor="let result of searchObject.results" (click)="searchResultClicked($event, result)">
+                        <!--Note that we're using mousedown here instead of click - mousedown gets the event before the blur-->
+                        <div class="search-result-icon-wrapper">
+                            <div class="search-result-icon" [ngClass]="result.type === 0 ? 'plate-icon' : ''" [zIcon]="{ icon: result.icon, type: result.iconFileType }"></div>
+                        </div>
+                        <div class="search-result-content-wrapper">
+                            <div class="title-wrapper">
+                                <div class="first">{{result.detailTwo}}</div><div class="second">{{result.title ? '- ' + result.title : ''}}</div>
+                            </div>
+                            <div class="details-wrapper">
+                                <div class="snippet-wrapper">
+                                    {{result.snippet}}
+                                </div>
+                                <div class="time-wrapper">
+                                    {{result.timestamp | moment:'time'}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="plate-default plate-settings" *ngIf="mode === PlateMode.Settings">
+            <div>
+                <div class="">
+                    <h3>Plate Settings</h3>
+                </div>
+                <div class="ui segment">
+                    <div class="">
+                        <h4 class="ui header without-vertical-margins">Name</h4>
+                        <div class="ui input large fluid">
+                            <input type="text" placeholder="Plate Name" (keyup.enter)="plateNameEditEnterPressed()" (blur)="plateNameEditInputBlur()" [(ngModel)]="editingPlateName" [readonly]="!canEdit()">
+                        </div>
+                    </div>
+                    <div style="margin-top: 1rem;" class="">
+                        <h4 class="ui header without-vertical-margins">Color</h4>
+                        <div class="plate-color-wrapper" *ngIf="!editingColor">
+                            <div class="plate-color" [style.background]="base.model.color"></div>
+                            <button class="ui icon button basic" (click)="editColorClicked()" *ngIf="canEdit()">
+                                <i class="write icon"></i>
+                            </button>
+                        </div>
+                        <div *ngIf="editingColor">
+                            <div class="plate-color-picker-wrapper">
+                                <div class="plate-color-picker-item" [style.background]="color" *ngFor="let color of colors" (click)="colorSelected(color)">
+                                    <i *ngIf="color == base.model.color" class="checkmark icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 1rem;" class="">
+                        <div class="flex space-between">
+                            <h4 class="ui header without-vertical-margins">Headers</h4>
+                            <button class="ui button mini header-add-button" style="padding: 0.5rem" (click)="settingAddHeaderClicked()">
+                                <i class="plus icon"></i>
+                                Add Header
+                            </button>
+                        </div>
+                        <div class="ui-plate ui-plate-list">
+                            <div *ngIf="addingHeader" class="item no-select generic-padding-top generic-padding-bottom lg">
+                                <input [focusOn]="'full'" [(ngModel)]="addingHeader.editName" type="text" class="ui-plate plain-input flex-item grow generic-padding" placeholder="Header Name" (keyup.enter)="settingsNewHeaderEnterPressed($event)">
+                            </div>
+                            <div *ngFor="let header of base.model.headers" class="item no-select generic-padding-top generic-padding-bottom lg">
+                                <span class="ui-plate plain-editable-item" *ngIf="!header.editing" (click)="settingsEditHeaderClicked(header)">{{header.name}} <i class="pencil icon" style="padding-left: 0.5rem;"></i></span>
+                                <div *ngIf="header.editing" class="flex column flex-item grow">
+                                    <input *ngIf="!header.isDoneHeader" [focusOn]="'full'" [(ngModel)]="header.editName" type="text" class="ui-plate plain-input flex-item grow generic-padding" placeholder="Header Name" (keyup.enter)="settingsEditHeaderEnterPressed($event, header)">
+                                    <span *ngIf="header.isDoneHeader">{{header.name}}</span>
+                                    <div *ngIf="!header.isDoneHeader" class="flex-item center generic-padding-top">
+                                        <div class="ui checkbox">
+                                            <input type="checkbox" name="itemsCanBeMarkedAsDone" [(ngModel)]="header.itemsCanBeDone" (click)="settingsItemCanBeMarkedDoneClicked(header)">
+                                            <label>Items can be marked as Done</label>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="header.isDoneHeader" class="flex-item center generic-padding-top">
+                                        <span class="ui-plate text-button" (click)="settingsHideDoneHeaderClicked(header)" [hidden]="header.isFullyHidden"><i class="delete icon"></i> Hide "Done"</span>
+                                        <span class="ui-plate text-button" (click)="settingsHideDoneHeaderClicked(header)" [hidden]="!header.isFullyHidden"><i class="check icon"></i> Show "Done"</span>
+                                    </div>
+                                    <div class="flex space-between center generic-padding-top">
+                                        <span *ngIf="!header.isDoneHeader" class="ui-plate text-button small danger" (click)="settingsRemoveHeaderClicked(header)"><i class="delete icon"></i> Remove Header</span>
+                                        <button class="ui button mini primary" (click)="settingsDoneEditingHeaderClicked(header)">OK</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ui basic segment" style="margin-top: 3rem;" *ngIf="canEdit()">
+                <div class="archive-wrapper">
+                    <div class="ui basic red button icon" (click)="archivePlateClickedShowDialog()">
+                        <i class="remove icon"></i>
+                        Archive this Plate
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Archive Plate dialog-->
+<div #archiveConfirmDialog class="ui small modal">
+    <div class="header">
+        Archive Plate
+    </div>
+    <div class="content">
+        <p>Archive "{{base.model.name}}"?  <b>There is no way to undo this yet!</b></p>
+    </div>
+    <div class="actions">
+        <div class="ui negative button" (click)="archivedPlateClicked()">
+            <i class="remove icon"></i>
+            Yes, archive
+        </div>
+        <div class="ui button" (click)="nevermindArchivePlateClicked()">
+            Nevermind
+        </div>
+    </div>
+</div>
+

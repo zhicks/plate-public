@@ -1,0 +1,264 @@
+<h2 class="ui center aligned icon header">
+    <i class="circular suitcase icon" style="color: #0066CC"></i>
+    Plate for Business
+</h2>
+
+<div #businessComponentWrapper class="ui basic segment">
+
+    <h4 class="ui center aligned header" style="color: #666;">
+        <span>Plate for Business is the best way for teams with 5+ members to work together.</span>
+    </h4>
+
+    <div *ngIf="!hasPlateBusinessTeam">
+        <h3 class="ui center aligned header">
+            <span>
+                What's Included?
+            </span>
+        </h3>
+
+        <div class="generic-padding">
+            <div class="ui cards two">
+                <div class="ui card" style="box-shadow: none;">
+                    <div class="content">
+                        <div class="header center aligned">Free</div>
+                        <div class="meta center aligned">Individual & Small Teams</div>
+                        <div class="ui divider horizontal">&nbsp;</div>
+                        <div class="ui list padded-items">
+                            <div class="item"><i class="icon circle"></i> <div class="content">
+                                Unlimited Platters & Plates
+                            </div></div>
+                            <div class="item"><i class="icon users"></i> <div class="content">
+                                Up to 4 Team Members
+                            </div></div>
+                            <div class="item"><i class="icon linkify"></i> <div class="content">
+                                2 Connected Apps
+                            </div></div>
+                            <div class="item"><i class="icon paste"></i> <div class="content">
+                                20 MB File Attachments
+                            </div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui card raised">
+                    <div class="content">
+                        <a class="ui label left corner blue">
+                            <i class="icon suitcase"></i>
+                        </a>
+                        <div class="header center aligned">Business</div>
+                        <div class="meta center aligned">Medium Sized Teams</div>
+                        <div class="ui divider horizontal">$8 / month per member</div>
+                        <div class="flex center justify-center" style="font-size: 0.8rem; margin-top: -0.5rem;">
+                            when paid annually
+                        </div>
+                        <div class="ui list padded-items">
+                            <div class="item"><i class="icon circle blue"></i> <div class="content">
+                                Unlimited Platters & Plates
+                            </div></div>
+                            <div class="item"><i class="icon users blue"></i> <div class="content">
+                                <b>Unlimited</b> Team Members
+                            </div></div>
+                            <div class="item"><i class="icon linkify blue"></i> <div class="content">
+                                <b>Unlimited</b> Connected Apps
+                            </div></div>
+                            <div class="item"><i class="icon paste blue"></i> <div class="content">
+                                <b>300 MB</b> File Attachments
+                            </div></div>
+                            <div class="item"><i class="icon lock blue"></i> <div class="content">
+                                <b>Fine Grained</b> Platter & Plate Access
+                            </div></div>
+                            <div class="item"><i class="icon call blue"></i> <div class="content">
+                                <b>Priority</b> email and phone support
+                            </div></div>
+                            <div class="item"><i class="icon search blue"></i> <div class="content">
+                                <b>Save Power Searches</b> <small>Coming soon!</small>
+                            </div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="ui center aligned header">
+            <span>
+                Ready to Upgrade? Select a Team to get started.
+            </span>
+        </h3>
+    </div>
+
+    <div class="ui segment team-list" *ngIf="teams.length">
+        <div class="ui-plate ui-plate-list">
+            <div class="item" [ngClass]="{selected: selectedTeam && selectedTeam.model.id === team.model.id }" *ngFor="let team of teams" (click)="teamClicked(team)">
+                <div class="plate-user-icon-placeholder-wrapper generic-margin-right">
+                    <i class="selection-indicator check icon" [ngStyle]="{opacity: selectedTeam && selectedTeam.model.id === team.model.id ? 1 : 0}"></i>
+                    <div class="plate-user-icon-placeholder" [ngStyle]="{background: team.model.color}">
+                        &nbsp;
+                    </div>
+                </div>
+                <div class="content">
+                    <div class="header">{{team.model.name}}</div>
+                    <div class="detail">{{team.sortedMembers?.length + ' Members'}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ui basic segment center aligned" *ngIf="!teams.length">
+        <a (click)="createAnotherTeamClicked()" style="cursor: pointer"><i class="plus icon"></i> Create a new team</a>
+    </div>
+
+    <div class="ui basic segment"></div>
+
+    <div class="ui positive message" *ngIf="upgradeThanksMessage">
+        {{upgradeThanksMessage}}
+    </div>
+
+    <!--VIEW EXISTING PAYMENT-->
+    <div class="ui basic segment" *ngIf="selectedTeam && selectedTeam.isPlateBusiness">
+        <div class="flex center justify-center" style="color: #333; font-size: 1.2rem">
+            <span><b>{{selectedTeam.model.name}}</b>&nbsp; is signed up for Plate for Business.</span>
+        </div>
+        <div class="flex baseline justify-center" style="color: #444">
+            <i class="users icon"></i> {{selectedTeam.sortedMembers.length}} Members
+        </div>
+        <div class="ui basic segment">
+            <b>{{selectedTeam.model.plateBusiness.purchaserEmail}}</b> bought this subscription.
+        </div>
+        <div class="ui segment" *ngIf="userIsPurchaserOfPlateBusinessTeam(selectedTeam)">
+            <div *ngIf="!plateBusinessPaymentDetails">
+                <div class="ui-plate subtle-detail center">Loading payment details</div>
+            </div>
+            <div *ngIf="plateBusinessPaymentDetails">
+                <div class="flex justify-center generic-padding" style="font-size: 1.3rem">Payment Details</div>
+                <div class="ui-plate info block center"><i class="info circle icon"></i> Only you can see these details.</div>
+                <div class="ui segment">
+                    <div class="flex space-between">
+                        <div>
+                            Paying <b>{{selectedTeam.paymentIntervalString}}</b>
+                        </div>
+                        <div>
+                            <div>
+                                <b>Plan Amount</b>: ${{plateBusinessPaymentDetails.planAmount * plateBusinessPaymentDetails.quantity / 100}}
+                            </div>
+                            <!--<div>-->
+                                <!--<b>Tax</b>: ${{plateBusinessPaymentDetails.planAmount * plateBusinessPaymentDetails.quantity * plateBusinessPaymentDetails.taxPercent / 10000}}-->
+                            <!--</div>-->
+                            <div>
+                                <b>Charged to card ending in</b> {{plateBusinessPaymentDetails.last4}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex space-between">
+                        <div>
+                            <b>Billing date start</b>: {{plateBusinessPaymentDetails.currentPeriodStart*1000 | moment:'full'}}
+                        </div>
+                        <div>
+                            <b>Billing date renewal</b>: {{plateBusinessPaymentDetails.currentPeriodEnd*1000 | moment:'full'}}
+                        </div>
+                    </div>
+                </div>
+                <div class="ui message">
+                    <div>- When a new user joins your team, you will be prorated for the remaining billing period for that user.</div>
+                    <div>- If a user leaves your team, you will be credited a prorated amount for that user's absence.</div>
+                </div>
+                <div class="ui error message" *ngIf="cancelErrorStatus">
+                    {{cancelErrorStatus}}
+                </div>
+                <div class="flex justify-center">
+                    <div class="ui dropdown" [class.disabled]="waiting.forCancelOperation" semanticDropdown>
+                        <span class="ui-plate text-button danger link">Cancel Plate for Business for this team</span>
+                        <div class="menu">
+                            <div class="item" (click)="cancelPlateBusinessClicked(selectedTeam)"><span class="text red bold">Confirm Cancel</span></div>
+                            <div class="item">Nevermind</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--PAYMENT-->
+    <div class="ui basic segment" *ngIf="selectedTeam && !selectedTeam.isPlateBusiness">
+
+        <div class="flex center justify-center" style="color: #333; font-size: 1.2rem">
+            <span>Upgrading &nbsp;<b>{{selectedTeam.model.name}}</b>&nbsp; to Plate for Business</span>
+        </div>
+        <div class="flex baseline justify-center" style="color: #444">
+            <i class="users icon"></i> {{selectedTeam.sortedMembers.length}} Members
+        </div>
+
+        <div class="ui basic segment form">
+            <div class="range-fields">
+                <div class="radio-wrapper generic-padding" style="cursor: pointer" (click)="radioClicked(PaymentInterval.Monthly)">
+                    <div class="ui radio checkbox">
+                        <input id="payment-interval-monthly-radio" type="radio" name="paymentIntervalSelection" [attr.value]="PaymentInterval.Monthly">
+                        <label>Monthly ({{payment.promoCodeApplied ? '$8' : '$12'}} / user per month)</label>
+                    </div>
+                </div>
+                <div class="radio-wrapper generic-padding" style="cursor: pointer" (click)="radioClicked(PaymentInterval.Yearly)">
+                    <div class="ui radio checkbox">
+                        <input id="payment-interval-yearly-radio" type="radio" name="paymentIntervalSelection" [attr.value]="PaymentInterval.Yearly" checked="checked">
+                        <label>Yearly ($8 / user per month - <b>33% off</b>)</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui basic segment">
+            <!--<div class="flex center justify-center" *ngIf="payment.applicableTaxRate">Tax ({{payment.applicableTaxRate*100}}%): ${{payment.totalTaxCents / 100}}</div>-->
+            <div class="flex center justify-center">Total: ${{payment.totalCents / 100}} {{payment.paymentInterval === PaymentInterval.Monthly ? 'Monthly' : 'Yearly'}}</div>
+        </div>
+
+        <div class="ui segment payment-form">
+            <div class="ui form">
+                <div class="ui error message" *ngIf="payment.errorMessage">
+                    <div class="header">Payment Problem</div>
+                    <p>{{payment.errorMessage}}</p>
+                </div>
+
+                <!--Do not give names to the payment details form elements!-->
+                <div class="fields">
+                    <div class="nine wide field" [ngClass]="payment.validation.valid.cc === ValidationState.Bad ? 'error' : ''">
+                        <label>Card Number</label>
+                        <input type="text" size="20" data-stripe="number" placeholder="Card #" [(ngModel)]="payment.form.cc" (keyup)="ccKeyup()" (blur)="ccBlur()">
+                    </div>
+                    <div class="four wide field" [ngClass]="payment.validation.valid.exp === ValidationState.Bad ? 'error' : ''">
+                        <label>Expiration (MM/YY)</label>
+                        <input type="text" size="5" data-stripe="exp_month_year" placeholder="Expiration" [(ngModel)]="payment.form.exp" (keyup)="expKeyup()" (blur)="expBlur()">
+                    </div>
+                    <div class="three wide field" [ngClass]="payment.validation.valid.cvc === ValidationState.Bad ? 'error' : ''">
+                        <label>CVC</label>
+                        <input type="text" size="4" data-stripe="cvc" class="CVC" [(ngModel)]="payment.form.cvc" (keyup)="cvcKeyup()" (blur)="cvcBlur()">
+                    </div>
+                </div>
+                <div class="fields">
+                    <div class="five wide field" [ngClass]="payment.validation.valid.zip === ValidationState.Bad ? 'error' : ''">
+                        <label>Zip / Postal Code</label>
+                        <input type="text" size="6" data-stripe="address_zip" placeholder="Billing Zip" [(ngModel)]="payment.form.zip" (keyup)="zipKeyup()" (blur)="zipBlur()">
+                    </div>
+                    <div class="five wide field">
+                        <label>Promo Code</label>
+                        <div class="flex">
+                            <input type="text" style="flex-shrink: 0;" data-stripe="address_zip" placeholder="Promo Code" [(ngModel)]="payment.form.promoCode">
+                            <div class="ui button tiny" style="margin-left: 0.5rem;" (click)="applyPromoCodeClicked()">Apply</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="inline field generic-padding" [ngClass]="payment.validation.valid.agreeToTerms === ValidationState.Bad ? 'error' : ''">
+                    <div class="ui checkbox">
+                        <input type="checkbox" [(ngModel)]="payment.form.agreeToTerms" (click)="agreeToTermsClicked()">
+                        <label>I accept the <a href="https://www.plate.work/terms-of-service" target="_blank">Terms of Service</a> and the <a href="https://www.plate.work/privacy-policy" target="_blank">Privacy Policy</a></label>
+                    </div>
+                </div>
+
+                <div class="flex right">
+                    <button type="submit" class="ui button primary" [ngClass]="payment.validated && !payment.didSubmitAndWaitingForResponse ? '' : 'disabled'" (click)="submitPaymentClicked()">
+                        {{payment.didSubmitAndWaitingForResponse ? 'Congrats! Working...' : 'Upgrade Team'}}
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+</div>

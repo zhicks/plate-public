@@ -1,0 +1,42 @@
+# Set up load balancing
+upstream plateapp {
+    # prod-01.plate.work
+    server 10.136.11.166;
+    # prod-02.plate.work
+    server 10.136.12.54;
+}
+
+server {
+    listen 192.241.156.89:80;
+    # Replace with plate.work once SSL is installed
+    server_name 192.241.156.89;
+    # Redirect all http requests to https
+    return 301 https://$server_name$request_uri;
+}
+server {
+    listen 192.241.156.89:443 ssl;
+    # Remove IP server_name once SSL is installed
+    server_name plate.work 192.241.156.89;
+
+    ssl on;
+    ssl_certificate         /opt/secret/plate/ssl/plate.crt;    
+    ssl_certificate_key     /opt/secret/plate/ssl/server.key;
+    # Uncomment once SSL is installed
+    # ssl_trusted_certificate /opt/secret/plate/ssl/ca-certs.pem;
+
+    # Harden SSL
+    ssl_prefer_server_ciphers      on;
+    ssl_protocols                  SSLv3 TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers                    ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS;
+    
+    add_header Strict-Transport-Security "max-age=31536000";
+
+    # Proxy setup
+    location / {
+        proxy_pass http://plateapp;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}

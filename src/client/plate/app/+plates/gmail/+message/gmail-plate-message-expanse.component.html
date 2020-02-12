@@ -1,0 +1,50 @@
+<div class="gmail-plate-expanse-wrapper">
+    <div #expanseContentWrapper class="transition hidden">
+        <div class="header-wrapper" (click)="headerClicked()" [plateStickIfScrollPast]="gmailPlateContentWrapper">
+            <div class="header-text">{{message.subject}}</div>
+            <div class="date-wrapper">
+                {{message.date | moment:'time'}}
+            </div>
+        </div>
+        <div class="top-wrapper">
+            <div class="sender-to-wrapper">
+                <div class="sender-wrapper">
+                    <div class="sender">{{message.from}} <span class="secondary">{{message.fromBrackets}}</span></div>
+                </div>
+                <div class="to-wrapper" style="display: none">
+                    <div class="to">To: {{message.toFull}}</div>
+                </div>
+            </div>
+        </div>
+        <div class="message-body-wrapper">
+            <div class="message-body" #messageBody>
+                <!--This is the message body-->
+                <!--<iframe style="border: 0" #messageBodyIframe sandbox="allow-same-origin"></iframe>-->
+            </div>
+        </div>
+        <div class="bottom-wrapper">
+            <div class="left-wrapper" *ngIf="!replyBoxOpen">
+                <button class="ui text button bold blue" (click)="replyBoxOpen = true">Reply <i class="reply icon"></i></button>
+            </div>
+            <div class="reply-box" *ngIf="replyBoxOpen">
+                <div class="top-wrapper">
+                    <span class="sender">To: {{message.from}} <span class="secondary">{{message.fromBrackets}}</span>
+                        <span class="ui-plate text-button small link blue" [hidden]="editSubject" (click)="editSubject = true">Edit Subject</span>
+                    </span>
+                    <div class="subject-content" *ngIf="editSubject">
+                        <div class="ui input small flex generic-padding">
+                            <input type="text" placeholder="Subject" [(ngModel)]="reply.subject">
+                        </div>
+                    </div>
+                </div>
+                <div class="reply-box-content">
+                    <textarea reply-box-content class="plate-textarea" textAreaAutoGrow [focusOn]="'full'" (heightListener)="onTextAreaHeightChanged($event)" type="text" [(ngModel)]="reply.content"></textarea>
+                </div>
+                <div class="bottom-wrapper">
+                    <div class="ui button small primary" (click)="sendReplyClicked()">Send</div>
+                    <div class="ui button icon" (click)="deleteReplyClicked()"><i class="trash icon"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

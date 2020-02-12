@@ -1,0 +1,42 @@
+.login-register-page {
+  height: 100%;
+
+  .invite-prompt {
+    font-size: 1.5rem;
+    line-height: 1.5rem;
+  }
+
+  .image {
+    margin-top: -100px;
+  }
+  .column {
+    max-width: 450px;
+  }
+
+  .ui.header .content {
+    vertical-align: middle;
+  }
+
+  .login-logo > svg {
+    width: 4rem;
+    height: 100%;
+  }
+}
+// ----------------------------------------------------- SVG Colors
+// from BuiltInColors
+.svg-white { * { fill: white; } }
+.svg-0066CC { * { fill: #0066CC; } }
+.svg-DB2828 { * { fill: #DB2828; } }
+.svg-F2711C { * { fill: #F2711C; } }
+.svg-FBBD08 { * { fill: #FBBD08; } }
+.svg-B5CC18 { * { fill: #B5CC18; } }
+.svg-21BA45 { * { fill: #21BA45; } }
+.svg-00B5AD { * { fill: #00B5AD; } }
+.svg-2185D0 { * { fill: #2185D0; } }
+.svg-6435C9 { * { fill: #6435C9; } }
+.svg-A333C8 { * { fill: #A333C8; } }
+.svg-E03997 { * { fill: #E03997; } }
+.svg-A5673F { * { fill: #A5673F; } }
+.svg-767676 { * { fill: #767676; } }
+.svg-1B1C1D { * { fill: #1B1C1D; } }
+// -----------------------------------------------------}

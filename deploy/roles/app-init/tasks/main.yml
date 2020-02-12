@@ -1,0 +1,58 @@
+---
+# Deploy the app!
+- name: stop any running apps with pm2
+  command: pm2 kill
+  ignore_errors: yes
+  tags:
+    - pm2-stop
+
+- name: clean up existing app directory
+  file: path={{ deploy_app_dir }} state=absent
+
+- name: create {{ deploy_app_dir }} directory
+  file: path={{ deploy_app_dir }} state=directory mode=0755
+
+- name: create {{ deploy_log_dir }} directory
+  file: path={{ deploy_log_dir }} state=directory mode=0755
+
+# Transfer tarball if it exists, if not, use rsync
+- name: check if plate.prod.tar.gz exists
+  local_action: stat path=../dist/plate.prod.tar.gz
+  register: tarball
+  ignore_errors: True
+
+- name: transfer plate.prod.tar.gz to host
+  unarchive: src=../dist/plate.prod.tar.gz dest={{ deploy_app_dir }}
+  when: tarball.stat.exists
+  tags:
+    - transfer-tarball
+
+- name: transfer app using rsync
+  synchronize: src=../dist/prod/ dest={{ deploy_app_dir }}
+  when: tarball.stat.exists == False
+  tags:
+    - transfer-rsync
+
+- name: start app with pm2 on port {{ nodejs_app_port }}
+  environment: "{{ PLATE_ENVIRONMENT }}"
+  command: pm2 start {{ deploy_app_dir }}/{{ deploy_app_executable }} 
+           --log-date-format="YYYY-MM-DD HH:mm Z"
+           -n {{ app_name }} 
+           -l {{ deploy_log_dir }}/pm2-combined.log 
+           -o {{ deploy_log_dir }}/pm2-out.log
+           -e {{ deploy_log_dir }}/pm2-error.log
+           -p {{ deploy_dir }}/pm2-{{ app_name }}.pid
+  tags:
+    - pm2-start
+
+# - name: stop apache
+#   service:
+#     name: apache2
+#     state: stopped
+#   become: true
+
+# - name: start apache
+#   service:
+#     name: apache2
+#     state: started
+#   become: true

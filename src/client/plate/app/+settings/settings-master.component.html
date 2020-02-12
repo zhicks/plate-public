@@ -1,0 +1,20 @@
+<div class="ui container text">
+    <div class="settings-header-wrapper">
+        <h2 class="ui aligned header settings-header">
+            <i class="settings icon"></i> Settings
+        </h2>
+    </div>
+
+    <div class="ui basic segment settings-content-wrapper">
+
+        <div class="ui top attached tabular menu tabs-wrapper">
+            <a class="item" [routerLink]="['profile']" [routerLinkActive]="['active']">Profile</a>
+            <a class="item" [routerLink]="['team']" [routerLinkActive]="['active']">Teams</a>
+            <a class="item" [routerLink]="['business']" [routerLinkActive]="['active']">Plate for Business</a>
+        </div>
+        <div class="ui bottom attached tab segment active active-tab-content-wrapper">
+            <router-outlet></router-outlet>
+        </div>
+
+    </div>
+</div>

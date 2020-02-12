@@ -1,0 +1,357 @@
+@import 'variables';
+
+.close-sidebar-button-wrapper {
+  cursor: pointer;
+  opacity: 0.5;
+  padding-left: 1rem;
+  padding-bottom: 1rem;
+  padding-top: 0.3rem;
+
+  &:hover {
+    color: #CCC;
+  }
+  &:active {
+    color: #999;
+  }
+}
+
+.plate-side-bar {
+  background: #333 !important;
+  color: white;
+  font-family: $font;
+  width: $sideBarWidth !important;
+
+  .inactive {
+    opacity: 0.3;
+  }
+
+  .top-wrapper {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem;
+  }
+
+  .new-platter-button-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 0.5rem;
+    padding-top: 0.7rem;
+
+    .new-platter-button {
+      display: flex;
+      align-items: baseline;
+      padding: 0.3rem 1rem;
+      border-radius: 0.2rem;
+      cursor: pointer;
+      background: rgba(0,0,0,0.2);
+
+      &:hover {
+        background: rgba(0,0,0,0.3);
+      }
+      &:active {
+        background: rgba(0,0,0,0.4);
+      }
+    }
+  }
+
+  .sidebar-team-wrapper {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    &:first-child {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .team-heading {
+      padding: 0.8rem 0.7rem 0.8rem 0.7rem;
+      color: #CCC;
+      font-weight: bold;
+      display: flex;
+      cursor: pointer;
+
+      &:hover {
+        background: #3C3C3C;
+        color: #FFF;
+      }
+      &:active {
+        background: #444;
+      }
+    }
+  }
+
+  .sidebar-groups-wrapper {
+    padding-left: 0.2rem;
+  }
+
+  .sidebar-group-wrapper {
+    padding: 0rem 0.3rem 0.5rem 0.3rem;
+
+    .sidebar-list-title-icons {
+      display: flex;
+    }
+
+    .sidebar-list-title-wrapper {
+      display: flex;
+      justify-content: space-between;
+      color: #CCC;
+      align-items: center;
+
+      .sidebar-list-action-button {
+        cursor: pointer;
+        color: #999;
+
+        &:hover {
+          color: #FFF;
+        }
+
+        &:active {
+          color: #CCC;
+        }
+      }
+
+      .sidebar-list-title-text {
+        line-height: 1em;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+
+        .text {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          cursor: pointer;
+
+          &:hover {
+            color: #FFF;
+          }
+          &:active {
+            color: #999;
+          }
+        }
+
+        .tree-expander-wrapper {
+          border-radius: 0.2rem;
+          transform: rotate(-90deg);
+          cursor: pointer;
+          transition: transform .1s ease,opacity .1s ease,-webkit-transform .1s ease;
+
+          &:hover {
+            background: rgba(255,255,255,0.1);
+          }
+          &:active {
+            background: rgba(0,0,0,0.1);
+          }
+
+          &.expanded {
+            transform: none;
+          }
+        }
+      }
+    }
+
+    .sidebar-item-add-button-wrapper {
+      padding: 0.6rem 0.4rem 0.3rem 0.4rem;
+      font-size: 0.8rem;
+
+      .sidebar-item-title-icon-wrapper {
+
+        .sidebar-item-title {
+          border-radius: 0.14rem;
+          padding: 0.45rem 0.8rem;
+          background: #3E3E3E;
+          cursor: pointer;
+
+          &:hover {
+            background: #525252;
+          }
+          &:active {
+            background: #D4D4D4;
+          }
+        }
+      }
+    }
+
+  }
+
+  .sidebar-new-connected-app-prompt-wrapper {
+    margin-top: 2rem;
+
+    .new-connected-app {
+      display: flex;
+      align-items: center;
+      opacity: 0.6;
+      cursor: pointer;
+      padding: 0.3rem;
+
+      &:hover {
+        opacity: 1;
+      }
+
+      &:active {
+        opacity: 0.8;
+      }
+
+      i {
+        margin-right: 0;
+        margin-top: -5px;
+        font-size: 0.8rem;
+      }
+
+      img {
+        width: 16px;
+        height: 16px;
+      }
+
+      span {
+        font-size: 0.8rem;
+        margin-left: 0.3rem;
+      }
+    }
+  }
+}
+
+.sidebar-item-wrapper {
+  cursor: pointer;
+  padding: 0.3rem 0.4rem;
+  margin-top: 0.3rem;
+  border-radius: 0.14rem;
+  background: #3E3E3E;
+  margin-left: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &.selected {
+    background: #666;
+
+    &:hover {
+      // Selected hover: bright
+      background: #8A8A8A;
+    }
+  }
+
+  &:hover {
+    // Unselected hover: brighter but not much
+    background: #525252;
+  }
+
+  &:active {
+    color: #D4D4D4;
+  }
+
+  .sidebar-item-title-icon-wrapper {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+
+    .sidebar-item-title {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-item-icon-wrapper {
+      height: 22px;
+      width: 22px;
+      display: flex;
+      align-items: center;
+
+      .sidebar-item-icon {
+        width: 22px;
+        height: 100%;
+
+        &.plate {
+          border-radius: 0.2rem;
+          width: 14px;
+          height: 14px;
+          // from BuiltInColors
+          &.bg-white { background: white; &.selected { border: 1px solid darken(white, 15%) } }
+          &.bg-0066CC { background: #0066CC; &.selected { border: 1px solid darken(#0066CC, 15%) } }
+          &.bg-DB2828 { background: #DB2828; &.selected { border: 1px solid darken(#DB2828, 15%) } }
+          &.bg-F2711C { background: #F2711C; &.selected { border: 1px solid darken(#F2711C, 15%) } }
+          &.bg-FBBD08 { background: #FBBD08; &.selected { border: 1px solid darken(#FBBD08, 15%) } }
+          &.bg-B5CC18 { background: #B5CC18; &.selected { border: 1px solid darken(#B5CC18, 15%) } }
+          &.bg-21BA45 { background: #21BA45; &.selected { border: 1px solid darken(#21BA45, 15%) } }
+          &.bg-00B5AD { background: #00B5AD; &.selected { border: 1px solid darken(#00B5AD, 15%) } }
+          &.bg-2185D0 { background: #2185D0; &.selected { border: 1px solid darken(#2185D0, 15%) } }
+          &.bg-6435C9 { background: #6435C9; &.selected { border: 1px solid darken(#6435C9, 15%) } }
+          &.bg-A333C8 { background: #A333C8; &.selected { border: 1px solid darken(#A333C8, 15%) } }
+          &.bg-E03997 { background: #E03997; &.selected { border: 1px solid darken(#E03997, 15%) } }
+          &.bg-A5673F { background: #A5673F; &.selected { border: 1px solid darken(#A5673F, 15%) } }
+          &.bg-767676 { background: #767676; &.selected { border: 1px solid darken(#767676, 15%) } }
+          &.bg-1B1C1D { background: #1B1C1D; &.selected { border: 1px solid darken(#1B1C1D, 15%) } }
+        }
+      }
+
+    }
+
+  }
+
+}
+
+.new-connected-app-dialog {
+
+  .content {
+    padding-left: 4rem !important;
+    padding-right: 4rem !important;
+
+    .connected-app-dialog-item-wrapper {
+      transition: background 200ms;
+      cursor: pointer;
+
+      &:hover {
+        background: #DDD;
+        color: #000;
+      }
+
+      &:active {
+        background: #CCC;
+      }
+
+      .connected-app-dialog-item-content-wrapper {
+
+        display: flex;
+        align-items: center;
+
+        .item-content {
+          color: #333;
+          margin-left: 1.5rem;
+
+          .header {
+            font-size: 1.4rem;
+            font-weight: bold;
+          }
+        }
+      }
+
+    }
+  }
+}
+
+.platter-settings-dialog {
+
+  .remove-from-team-button {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-size: 0.8rem;
+    color: #666;
+
+    &:hover {
+      color: #333;
+    }
+  }
+
+  .left {
+    display: flex;
+    align-items: center;
+
+
+  }
+}
+
+
+
+
+
+

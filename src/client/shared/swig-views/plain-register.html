@@ -1,0 +1,95 @@
+{% extends 'plain-layout.html' %} {% block content %}
+
+<div class="login-register-page ui middle aligned center aligned grid">
+    <div class="column">
+        {% if inviterName.length %}
+        <div class="row ui segment">
+            <div class="invite-prompt">Good news! <b>{{inviterName}}</b> has invited you to join <b>{{teamName}}</b>.</div>
+        </div>
+        {% endif %}
+        <div class="row">
+            <h2 class="ui blue image header">
+                <div class="content login-logo svg-0066CC">
+                    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                        viewBox="0 0 576 576" style="enable-background:new 0 0 576 576;" xml:space="preserve">
+                        <g>
+                            <g>
+                                <path class="plate-svg" d="M498.8,63.6l-5.6,301.2l0,0l-2.5,124.6c0,0.2,0,0.3,0,0.5c0,12.5,10.1,22.6,22.6,22.6s22.6-10.1,22.6-22.6
+                                        l-8-194.4l0,0c0-1,0.1-1.9,0.2-2.9c4.4-22.6,11.2-49.1,11.7-77.5C541.5,131.8,523.1,64,498.8,63.6z"></path>
+                                <path class="plate-svg" d="M125.8,167.8c36.8-49.5,95.7-81.6,162.2-81.6c88.8,0,164.3,57.4,191.3,137.1l1.7-90.7
+                                        c-45.5-56.4-115-92.4-193-92.4c-61.8,0-118.3,22.6-161.6,60v60.6C126.4,163.1,126.2,165.5,125.8,167.8z"></path>
+                                <path class="plate-svg" d="M476.7,359.8c-29,76-102.5,130-188.7,130c-77.4,0-144.6-43.6-178.5-107.5l1.9,79.5
+                                        c44.9,45.7,107.5,74,176.6,74c74.6,0,141.5-32.9,186.9-85.1l1.7-81.9L476.7,359.8z"></path>
+                                <path class="plate-svg" d="M103.7,63.6H100c-1.8,0-3.3,1.4-3.4,3.2l-4,72.4c-0.1,1.9-1.7,3.5-3.7,3.5h-3.4c-2,0-3.6-1.6-3.7-3.5L79.3,67
+                                        c-0.1-1.8-1.6-3.3-3.4-3.3h-6.3c-1.8,0-3.3,1.4-3.4,3.3l-2.5,72.2c-0.1,2-1.7,3.5-3.7,3.5h-3.4c-1.9,0-3.5-1.5-3.7-3.5l-4-72.4
+                                        c-0.1-1.8-1.6-3.2-3.4-3.2H42c-3.3,0-6,2.7-6,6v91.2c0,7.2,2.3,14.2,6.7,19.9c3,4,6.4,7.3,10.1,10c2.9,2.1,4.6,5.5,4.5,9.1
+                                        l-6.9,289.6c0,0.2,0,0.3,0,0.5c0,12.5,10.1,22.6,22.6,22.6s22.6-10.1,22.6-22.6l-6.9-290.1c-0.1-3.6,1.6-7,4.5-9.1
+                                        c3.7-2.7,7.1-6,10.1-10c4.4-5.7,6.7-12.7,6.7-19.9V69.6C109.8,66.3,107.1,63.6,103.7,63.6z"></path>
+                            </g>
+                            <g>
+                                <polygon class="plate-svg" points="291.9,154.9 284.1,154.9 283.1,103.7 292.9,103.7 		"></polygon>
+                                <polygon class="plate-svg" points="421.1,291.9 421.1,284.1 472.3,283.1 472.3,292.9 		"></polygon>
+                                <polygon class="plate-svg" points="284.1,421.1 291.9,421.1 292.9,472.3 283.2,472.3 		"></polygon>
+                                <polygon class="plate-svg" points="154.9,284.1 154.9,291.9 103.7,292.9 103.7,283.1 		"></polygon>
+                                <polygon class="plate-svg" points="224.9,170.8 218,174.7 191.6,130.8 200,125.9 		"></polygon>
+                                <polygon class="plate-svg" points="405.2,224.9 401.3,218 445.2,191.6 450.1,200 		"></polygon>
+                                <polygon class="plate-svg" points="351.1,405.2 358,401.3 384.4,445.2 376,450.1 		"></polygon>
+                                <polygon class="plate-svg" points="170.8,351.1 174.7,358 130.8,384.4 125.9,376 		"></polygon>
+                                <polygon class="plate-svg" points="174.7,218 170.8,224.9 125.9,200 130.8,191.6 		"></polygon>
+                                <polygon class="plate-svg" points="358,174.7 351.1,170.8 376,125.9 384.4,130.8 		"></polygon>
+                                <polygon class="plate-svg" points="401.3,358 405.2,351.1 450.1,376 445.2,384.4 		"></polygon>
+                                <polygon class="plate-svg" points="218,401.3 224.9,405.2 200,450.1 191.6,445.2 		"></polygon>
+                            </g>
+                        </g>
+                    </svg>
+                </div>
+                <div class="content">
+                    Create a Plate account
+                </div>
+            </h2>
+            <form class="ui large form register">
+                <div class="ui stacked segment">
+                    <div class="post-error-wrapper ui negative message" style="display: none">
+                        <p class="post-error"></p>
+                    </div>
+                    <div class="field">
+                        <div class="ui large left icon input">
+                            <i class="smile icon"></i>
+                            <input id="name" maxlength="70" type="text" name="name" placeholder="Name">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui large left icon input">
+                            <i class="mail icon"></i> {% if inviteeEmail.length %}
+                            <input id="email" maxlength="254" type="text" name="email" placeholder="E-mail address" value="{{inviteeEmail}}">                            {% else %}
+                            <input id="email" maxlength="254" type="text" name="email" placeholder="E-mail address"> {% endif %}
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui large left icon input">
+                            <i class="lock icon"></i>
+                            <input type="password" name="password" placeholder="Password">
+                        </div>
+                    </div>
+                    <div class="ui fluid large blue submit button">Sign Up</div>
+                    <div class="provider-wrapper">
+                        <div class="ui horizontal divider">Or</div>
+                        <a class="ui fluid large button" href="/auth/google"><i class="google icon"></i> Sign up with Google</a>
+                    </div>
+                </div>
+
+                <div class="ui error message"></div>
+
+            </form>
+
+            <div class="ui message">
+                {% if inviterName.length %} Already have an account? <a href="/login/{{teamId}}/{{inviterId}}/{{inviteToken}}">Sign In</a>                {% else %} Already have an account? <a href="/login">Sign In</a> {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- build:plain-js -->
+<!-- endbuild -->
+{% endblock %}

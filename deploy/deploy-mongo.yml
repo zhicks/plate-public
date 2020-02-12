@@ -1,0 +1,10 @@
+---
+## Deploy the web application
+- name: Deploy mongo server
+  hosts: mongo-servers
+  vars_files: 
+    - [ "vars/default.yml" ]
+    - [ "vars/{{ env }}-config.yml" ]
+   
+  roles: 
+    - { role: 'mongo', tags: [ 'mongo' ] }

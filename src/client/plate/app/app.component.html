@@ -1,0 +1,18 @@
+<div class="master-wrapper">
+    <div #powerSearchWrapper class="power-search-wrapper" [class.show]="powerSearchService.searchText" (click)="powerSearchClicked()"><i class="search icon"></i> Power search for "{{powerSearchService.searchText}}"</div>
+    <div class="app-header">
+        <plate-top-bar #plateTopBar></plate-top-bar>
+    </div>
+    <div style="display: flex; flex: 1;min-height: 0;">
+        <div class="app-content">
+            <div plate-pushable class="ui bottom attached app-content-inner"> <!-- pushable -->
+                <plate-side-bar></plate-side-bar>
+                <router-outlet></router-outlet>
+            </div>
+        </div>
+        <plate-right-bar class="plate-right-bar-wrapper" [hidden]="!plateRightBarService.visible"></plate-right-bar>
+    </div>
+
+</div>
+<plate-toast></plate-toast>
+<calendar (onDateChange)="datePickerService.onDateChange($event)" [settings]="datePickerService.calendarSettings"></calendar>

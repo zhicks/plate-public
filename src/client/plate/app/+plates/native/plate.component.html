@@ -1,0 +1,351 @@
+<div class="plate-wrapper" p-sch>
+    <div plate-head-wrapper p-d-handle="1" [attr.p-d-disable]="base.docked ? 'true' : null" class="plate-head-wrapper" [style.background]="base.model.color" (mouseover)="base.hoveringOverHeader = true" (mouseout)="base.hoveringOverHeader = false" (click)="plateHeaderClicked($event)">
+        <div p-d-handle="1" class="left-wrapper">
+            <span class="docked-indicator" [hidden]="!base.docked || base.minimized">Docked</span>
+            <div p-d-handle="1" class="icon-wrapper" [hidden]="editingTitleAdHoc">
+                <!--<img p-d-handle="1" class="plate-head-icon" src="/shared/assets/images/logo_plate_small.png">-->
+                <div p-d-handle="1" *ngIf="mode === PlateMode.Default" class="plate-head-icon svg-white" [zIcon]="{ icon: connectedAppsService.getConnectedAppIcon(ClientConnectedAppType.Native), type: 'svg' }"></div>
+                <div p-d-handle="1" *ngIf="mode === PlateMode.Settings" class="plate-head-icon left-arrow-wrapper" style="display: flex; align-items: center;" (click)="leftArrowBackClicked()">
+                    <i class="left arrow icon"></i>
+                </div>
+            </div>
+            <div p-d-handle="1" class="plate-head-title-wrapper">
+                <span p-d-handle="1" [hidden]="editingTitleAdHoc">{{base.model.name}}</span>
+                <input p-d-handle="1" *ngIf="editingTitleAdHoc" [focusOn]="'full'" [(ngModel)]="base.model.name" type="text" class="ad-hoc-title-edit-input" placeholder="Plate Title" (keyup.enter)="adHocTitleEditEnterPressed()" (blur)="adHocTitleEditInputBlurred()">
+            </div>
+        </div>
+        <div p-d-handle="1" class="right-wrapper">
+            <div class="plate-actions-wrapper" [hidden]="!base.docked && (editingTitleAdHoc || !base.hoveringOverHeader)">
+                <div p-d-handle="1" header-button-wrapper class="header-button-wrapper" (click)="plateSettingsIconClicked()" [ngClass]="{selected: mode === PlateMode.Settings}" [hidden]="base.minimized">
+                    <i p-d-handle="1" class="setting icon"></i>
+                </div>
+                <div p-d-handle="1" header-button-wrapper class="header-button-wrapper" (click)="pinPlateClicked()" style="display: none"> <!-- [hidden]="base.docked" -->
+                    <i p-d-handle="1" class="pin icon"></i>
+                </div>
+                <div p-d-handle="1" header-button-wrapper class="header-button-wrapper" (click)="dockPlateClicked()" [hidden]="base.minimized">
+                    <i p-d-handle="1" class="icon" [ngClass]="base.docked ? 'expand' : 'compress'"></i>
+                </div>
+                <div p-d-handle="1" header-button-wrapper class="header-button-wrapper" (click)="minimizePlateClicked()">
+                    <i p-d-handle="1" class="icon" [ngClass]="base.minimized ? 'chevron up' : 'minus'"></i>
+                </div>
+            </div>
+            <div p-d-handle="1" header-button-wrapper class="header-button-wrapper plate-head-close-wrapper" (click)="closePlateClicked()">
+                <div p-d-handle="1" class="close-icon-wrapper">
+                    <i p-d-handle="1" class="icon remove"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="plate-content-wrapper" p-sch plate-content-wrapper [hidden]="base.minimized">
+        <div class="plate-top-detail-wrapper" *ngIf="base.platter">
+            <div class="platter-name inline-detail-wrapper">
+                {{base.platter.model.name}}
+            </div>
+            <div class="inline-detail-wrapper">
+                <div [hidden]="!base.platter.team"><i class="users icon"></i>{{base.platter.team && base.platter.team.model.name}}</div>
+                <div [hidden]="base.platter.team"><i class="user icon"></i>Private</div>
+            </div>
+        </div>
+        <div class="plate-default" *ngIf="mode === PlateMode.Default">
+            <div class="plate-subsection-wrapper" *ngFor="let header of base.model.headers" [hidden]="header.isDoneHeader && header.isFullyHidden">
+                <div class="plate-subsection-title-wrapper">
+                    <div class="plate-subsection-title default-plate" (mouseover)="header.hovering = true" (mouseout)="header.hovering = false" (click)="headerClicked(header)">
+                        {{header.name}} <i class="setting icon" [hidden]="!header.hovering"></i>
+                    </div>
+                    <div class="plate-subsection-title-right-wrapper">
+                        <!--<div class="plate-subsection-minimize-expand-wrapper">-->
+                            <!--<div class="plate-subsection-minimize-expand">-->
+                                <!--<i class="minus square icon"></i>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <button class="ui button tiny header-add-button" (click)="headerAddButtonClicked(header)" [hidden]="header.isDoneHeader || !canAddItems">
+                            <i class="plus icon"></i>
+                            Add
+                        </button>
+                        <button class="ui button tiny header-add-button" (click)="headerToggleHide(header)" *ngIf="header.isDoneHeader">
+                            {{header.isHidden ? 'Show' : 'Hide'}}
+                        </button>
+                    </div>
+                </div>
+                <div [attr.plateId]="base.model.id" [attr.headerId]="header.id" [hidden]="header.isHidden" plate-drag="native" [attr.can-drag-out]="canDragItemsOut" [attr.can-add]="canAddItems" class="plate-subsection-content-wrapper" [ngClass]="{empty: !getItemsForHeaderId(header.id) || !getItemsForHeaderId(header.id).length}" [dragula]="'plate-items-drag'">
+
+                    <!--Update this at bottom and top if change-->
+                    <div plate-no-drag="1" class="plate-item-wrapper flex column" *ngIf="addingItemForHeader(header, AddingItemLocation.Top)">
+                        <div class="plate-item-top-wrapper new-item">
+                            <div class="ui input new-item-input-wrapper">
+                                <textarea class="plate-textarea" textAreaAutoGrow placeholder="Item title" type="text" [(ngModel)]="itemsCurrentlyBeingAdded[header.name].model.title" [focusOn]="newItemFocus" (keydown.enter)="newItemEnterPressed($event, header)" (keydown.esc)="newItemExitPressed($event, header)" (blur)="newItemBlurred($event, header)"></textarea>
+                            </div>
+                            <div class="new-item-close-icon" (click)="newItemCloseIconClicked(header)">
+                                <i class="close icon"></i>
+                            </div>
+                        </div>
+                        <div class="plate-item-bottom-wrapper new-item">
+                            <div class="buttons-wrapper">
+                                <button new-item-ok-button class="ui button mini primary" ok-button (click)="newItemOkClicked(header)">OK</button>
+                                <button new-item-edit-button class="ui button mini green" edit-button (click)="newItemEditClicked(header)">Edit</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align:center;color:#AAA;font-style:italic;" *ngIf="header.isDoneHeader && !getItemsForHeaderId(header.id).length">
+                        Nothing done yet
+                    </div>
+
+                    <div [attr.plateId]="base.model.id"
+                         [attr.id]="item.model.id"
+                         [attr.pPos]="item.model.pos"
+                         class="plate-item-wrapper"
+                         [ngClass]="{done: header.isDoneHeader}"
+                         *ngFor="let item of getItemsForHeaderId(header.id); let itemIndex = index;"
+                         [hidden]="filterService.isFilteredOut(item)"
+                         (click)="itemClicked($event, item)"
+                         (mouseover)="onMouseOverPlateItem(item)"
+                         (mouseout)="item.hovering = false"
+                         [attr.plate-no-drag]="cannotDragItems"
+                    >
+                        <div class="activity-indicator" [style.background]="base.model.color" [hidden]="!item.activities || !itemHasActivities(item) || item.userAckedActivities"></div>
+                        <div class="color-bar" [ngClass]="plateItemsService.PRIORITY_COLOR_CLASSES[item.priorityValue]"></div>
+                        <div class="plate-item-sub-wrapper" *ngIf="!item.confirm">
+                            <div class="plate-item-top-wrapper" *ngIf="!item.quickEditing">
+                                <div class="plate-item-title-wrapper">
+                                    <div class="plate-item-checkbox-wrapper" [hidden]="!header.itemsCanBeDone">
+                                        <div item-checkbox class="plate-item-checkbox" (click)="checkboxClicked(header, item)" (mouseover)="item.hoveringOverCheckbox = true" (mouseout)="item.hoveringOverCheckbox = false">
+                                            <i class="circle icon" [ngClass]="{thin: (header.isDoneHeader && item.hoveringOverCheckbox) || (!header.isDoneHeader && !item.hoveringOverCheckbox), check: (!header.isDoneHeader && item.hoveringOverCheckbox) || (header.isDoneHeader && !item.hoveringOverCheckbox)}"></i>
+                                        </div>
+                                    </div>
+                                    <span class="plate-item-title">{{item.model.title}} <span *ngIf="PLATEDEBUG.showPos">{{item.model.pos}}</span></span>
+                                </div>
+                                <div class="plate-item-right-wrapper">
+                                    <div class="tags-wrapper" *ngIf="item.model.tags && item.model.tags.length">
+                                        <div class="tag-wrapper" *ngFor="let tag of item.model.tags;">
+                                            <button class="ui button blue mini plate-item-tag">#{{tag.name}}</button>
+                                        </div>
+                                    </div>
+                                    <div menu-button-wrapper class="menu-button-wrapper" [ngClass]="{hoveringOverItem: item.hovering}" bodyDropdown (click)="bodyDropdownService.clicked($event)" [hidden]="!canArchiveItems">
+                                        <div class="menu-button-line"></div>
+                                        <div class="menu-button-line"></div>
+                                        <div class="menu-button-line"></div>
+                                        <div class="body-dropdown-menu ui segment">
+                                            <div class="item red text" (click)="archiveItemClicked(item, header)"><i class="remove icon"></i> <span>Delete Item (No Undo!)</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="plate-item-top-wrapper" *ngIf="item.quickEditing">
+                                <div class="ui input">
+                                    <textarea class="plate-textarea" textAreaAutoGrow placeholder="Item title" type="text" [(ngModel)]="item.model.title" [focusOn]="'full'" (keydown.enter)="quickEditEnterPressed($event, item, header)"></textarea>
+                                </div>
+                                <div class="new-item-close-icon" (click)="quickEditCloseIconClicked(item, header)">
+                                    <i class="close icon"></i>
+                                </div>
+                            </div>
+                            <!--<div class="plate-item-bottom-wrapper">-->
+                                <!--<div class="buttons-wrapper">-->
+                                    <!--<button ok-button class="ui button primary" (click)="quickEditOkClicked(item, header)">OK</button>-->
+                                    <!--<button edit-button class="ui button green" (click)="quickEditEditClicked(item, header)">Edit</button>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                            <div class="plate-item-top-mid-wrapper">
+                                <div class="due-wrapper">
+                                    <span [hidden]="!item.model.due"><i class="clock icon"></i> {{item.model.due | moment:'time'}}</span>
+                                </div>
+                                <div class="assignees-wrapper" [hidden]="!item.assignees.length">
+                                    <i class="users icon"></i>
+                                    <div *ngFor="let assignee of item.assignees">
+                                        <div class="plate-user-icon-placeholder-wrapper generic-padding-right">
+                                            <div class="plate-user-icon-placeholder extra small" style="background: #0D78B7">
+                                                {{assignee.initials}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--<div class="plate-item-mid-mid-wrapper">-->
+                                <!---->
+                            <!--</div>-->
+                            <div class="plate-item-mid-wrapper">
+                                <div class="plate-item-mid-left-wrapper">
+                                    <div class="created-wrapper">
+                                        {{item.model.created | moment}}
+                                    </div>
+                                    <div class="comments-wrapper" [hidden]="!item.model.numComments">
+                                        <div class="item-divider">&nbsp;</div>
+                                        {{item.model.numComments}} <i class="comments icon"></i>
+                                    </div>
+                                    <div class="file-attachment-wrapper" [hidden]="!item.model.fileAttachments?.length">
+                                        <div class="item-divider">&nbsp;</div>
+                                        <span>{{item.model.fileAttachments?.length}} <i class="attach icon"></i></span>
+                                    </div>
+                                </div>
+                                <div class="plate-item-mid-right-wrapper">
+                                    <div class="" *ngIf="item.impactValue">
+                                        <i class="lightning icon"></i>{{item.impactValue}}
+                                    </div>
+                                    <div class="item-divider" [hidden]="!(item.effortValue && item.impactValue)">&nbsp;</div>
+                                    <div class="" *ngIf="item.effortValue">
+                                        <i class="cubes icon"></i>{{item.effortValue}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="plate-item-bottom-wrapper" *ngIf="item.model.connectedAppAttachments && item.model.connectedAppAttachments.length > 0">
+                                <div class="attachment-wrapper" *ngFor="let appAttachment of item.model.connectedAppAttachments;">
+                                    <div class="attachment-wrapper-left">
+                                        <div class="attachment-icon" [zIcon]="{ icon: connectedAppsService.getConnectedAppIcon(appAttachment.app), type: 'png' }"></div>
+                                        <b>{{appAttachment.title}}</b> - {{appAttachment.subtitle}}
+                                    </div>
+                                    <div class="attachment-wrapper-right">
+                                        <!--<i class="arrow right icon"></i>-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div plate-no-drag="1" class="flex column" *ngIf="item.confirm" style="color: #0E566C; padding: 0.5rem">
+                            {{item.confirm.message}}
+                            <div class="flex" style="justify-content: flex-end; padding-top: 1rem;">
+                                <button item-confirm-message-button class="ui button primary" (click)="itemConfirmMessageClicked(item, header)">OK</button>
+                                <button item-confirm-nevermind-button class="ui button" (click)="itemConfirmNevermindClicked(item, header)">Nevermind</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div style="opacity: 0.8;" class="add-at-bottom-button ui-plate text-button small flex justify-center" *ngIf="!header.isDoneHeader && !addingItemForHeader(header) && canAddItems" (click)="addAtBottomButtonClicked(header)">
+                        <i class="plus icon"></i> Add an Item to {{header.name}}
+                    </div>
+
+                    <!--Update this at bottom and top if change-->
+                    <div plate-no-drag="1" class="plate-item-wrapper flex column" *ngIf="addingItemForHeader(header, AddingItemLocation.Bottom)">
+                        <div class="plate-item-top-wrapper new-item">
+                            <div class="ui input new-item-input-wrapper">
+                                <textarea class="plate-textarea" textAreaAutoGrow placeholder="Item title" type="text" [(ngModel)]="itemsCurrentlyBeingAdded[header.name].model.title" [focusOn]="newItemFocus" (keydown.enter)="newItemEnterPressed($event, header)" (keydown.esc)="newItemExitPressed($event, header)" (blur)="newItemBlurred($event, header)"></textarea>
+                            </div>
+                            <div class="new-item-close-icon" (click)="newItemCloseIconClicked(header)">
+                                <i class="close icon"></i>
+                            </div>
+                        </div>
+                        <div class="plate-item-bottom-wrapper new-item">
+                            <div class="buttons-wrapper">
+                                <button new-item-ok-button class="ui button mini primary" ok-button (click)="newItemOkClicked(header)">OK</button>
+                                <button new-item-edit-button class="ui button mini green" edit-button (click)="newItemEditClicked(header)">Edit</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="plate-default plate-settings" *ngIf="mode === PlateMode.Settings">
+            <div>
+                <div class="">
+                    <h3>Plate Settings</h3>
+                </div>
+                <div class="ui segment">
+                    <div class="">
+                        <h4 class="ui header without-vertical-margins">Name</h4>
+                        <div class="ui input large fluid">
+                            <input type="text" placeholder="Plate Name" (keyup.enter)="plateNameEditEnterPressed()" (blur)="plateNameEditInputBlur()" [(ngModel)]="editingPlateName" [readonly]="!canModifyPlate">
+                        </div>
+                    </div>
+                    <div style="margin-top: 1rem;" class="">
+                        <h4 class="ui header without-vertical-margins">Color</h4>
+                        <div class="plate-color-wrapper" *ngIf="!editingColor">
+                            <div class="plate-color" [style.background]="base.model.color"></div>
+                            <button class="ui icon button basic" (click)="editColorClicked()" *ngIf="canModifyPlate">
+                                <i class="write icon"></i>
+                            </button>
+                        </div>
+                        <div *ngIf="editingColor">
+                            <div class="plate-color-picker-wrapper">
+                                <div class="plate-color-picker-item" [style.background]="color" *ngFor="let color of colors" (click)="colorSelected(color)">
+                                    <i *ngIf="color == base.model.color" class="checkmark icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 1rem;" class="" *ngIf="canModifyPlate">
+                        <div class="flex space-between">
+                            <h4 class="ui header without-vertical-margins">Headers</h4>
+                            <button class="ui button mini header-add-button" style="padding: 0.5rem" (click)="settingAddHeaderClicked()">
+                                <i class="plus icon"></i>
+                                Add Header
+                            </button>
+                        </div>
+                        <div class="ui-plate ui-plate-list">
+                            <div *ngIf="addingHeader" class="item no-select generic-padding-top generic-padding-bottom lg">
+                                <input [focusOn]="'full'" [(ngModel)]="addingHeader.editName" type="text" class="ui-plate plain-input flex-item grow generic-padding" placeholder="Header Name" (keyup.enter)="settingsNewHeaderEnterPressed($event)">
+                            </div>
+                            <div *ngFor="let header of base.model.headers" class="item no-select generic-padding-top generic-padding-bottom lg">
+                                <span class="ui-plate plain-editable-item" *ngIf="!header.editing" (click)="settingsEditHeaderClicked(header)">{{header.name}} <i class="pencil icon" style="padding-left: 0.5rem;"></i></span>
+                                <div *ngIf="header.editing" class="flex column flex-item grow">
+                                    <input *ngIf="!header.isDoneHeader" [focusOn]="'full'" [(ngModel)]="header.editName" type="text" class="ui-plate plain-input flex-item grow generic-padding" placeholder="Header Name" (keyup.enter)="settingsEditHeaderEnterPressed($event, header)">
+                                    <span *ngIf="header.isDoneHeader">{{header.name}}</span>
+                                    <div *ngIf="!header.isDoneHeader" class="flex-item center generic-padding-top">
+                                        <div class="ui checkbox">
+                                            <input type="checkbox" name="itemsCanBeMarkedAsDone" [(ngModel)]="header.itemsCanBeDone" (click)="settingsItemCanBeMarkedDoneClicked(header)">
+                                            <label>Items can be marked as Done</label>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="header.isDoneHeader" class="flex-item center generic-padding-top">
+                                        <span class="ui-plate text-button" (click)="settingsHideDoneHeaderClicked(header)" [hidden]="header.isFullyHidden"><i class="delete icon"></i> Hide "Done"</span>
+                                        <span class="ui-plate text-button" (click)="settingsHideDoneHeaderClicked(header)" [hidden]="!header.isFullyHidden"><i class="check icon"></i> Show "Done"</span>
+                                    </div>
+                                    <div class="flex space-between center generic-padding-top">
+                                        <span *ngIf="!header.isDoneHeader" class="ui-plate text-button small danger" (click)="settingsRemoveHeaderClicked(header)"><i class="delete icon"></i> Remove Header</span>
+                                        <button class="ui button mini primary" (click)="settingsDoneEditingHeaderClicked(header)">OK</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ui basic segment" style="margin-top: 3rem;"  *ngIf="canArchivePlate">
+                <div class="archive-wrapper">
+                    <div class="ui basic red button icon" (click)="archivePlateClickedShowDialog()">
+                        <i class="remove icon"></i>
+                        Archive this Plate
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Archive Plate dialog-->
+<div #archiveConfirmDialog class="ui small modal">
+    <div class="header">
+        Archive Plate
+    </div>
+    <div class="content">
+        <p>Archive "{{base.model.name}}"?  <b>There is no way to undo this yet!</b></p>
+    </div>
+    <div class="actions">
+        <div class="ui negative button" (click)="archivedPlateClicked()">
+            <i class="remove icon"></i>
+            Yes, archive
+        </div>
+        <div class="ui button" (click)="nevermindArchivePlateClicked()">
+            Nevermind
+        </div>
+    </div>
+</div>
+
+
+<!--Delete Header dialog-->
+<div #deleteHeaderConfirmDialog class="ui small modal">
+    <div class="header">
+        Delete Header
+    </div>
+    <div class="content">
+        <p>Delete header "{{deletingHeaderCandidate ? deletingHeaderCandidate.name : ''}}" and all items in it?  <b>There is no way to undo this yet!</b></p>
+    </div>
+    <div class="actions">
+        <div class="ui negative button" (click)="deleteHeaderConfirmClicked()">
+            <i class="remove icon"></i>
+            Yes, delete
+        </div>
+        <div class="ui button" (click)="nevermindHeaderConfirmClicked()">
+            Nevermind
+        </div>
+    </div>
+</div>

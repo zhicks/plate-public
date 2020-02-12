@@ -1,0 +1,32 @@
+<div class="header">
+    <div class="title">Activity</div>
+    <div class="close-right-bar-button-wrapper" (click)="closeButtonClicked()">
+        <i class="close icon"></i>
+    </div>
+</div>
+<div class="activity-feed-wrapper">
+    <div [hidden]="activities.length" style="text-align: center; opacity: 0.3; cursor: default;">
+        <i>No recent activities</i>
+    </div>
+    <div class="event" *ngFor="let activity of activities" [ngClass]="activity.userAcked ? 'acked' : ''" (click)="activityClicked(activity)" [attr.title]="activity.originatorName + ' ' + activity.activityString"> <!--  -->
+        <div class="activity-indicator" [hidden]="activity.userAcked" [style.background]="activity.model.color"></div>
+        <div class="label">
+            <div class="plate-user-icon-placeholder-wrapper">
+                <div class="plate-user-icon-placeholder small">
+                    {{activity.initials}}
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="summary">
+                <span class="text"><b>{{activity.originatorName}}</b> {{activity.activityString}}</span>
+                <div class="date">
+                    {{activity.model.created | moment:'time'}}
+                </div>
+            </div>
+            <div class="extra text" *ngIf="!(activity.userAcked)">
+                {{activity.model.detail3}}
+            </div>
+        </div>
+    </div>
+</div>

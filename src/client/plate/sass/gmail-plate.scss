@@ -1,0 +1,174 @@
+@import 'variables';
+
+.gmail-dragging-item {
+  transform: opacity 200ms;
+  background: white;
+
+  .gmail-dragging-item-content {
+    display: flex;
+    margin-top: 0.5rem;
+    padding-left: 0.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    .left {
+
+    }
+    .right {
+      margin-left: 0.6rem;
+
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      .from-wrapper {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-weight: bold;
+      }
+      .subject {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 0.85rem;
+      }
+    }
+  }
+}
+
+.gmail-plate-item-ts {
+  color: #9e9ea6;
+  font-size: .75rem;
+}
+
+.new-prompt-drag {
+  color: $plate-primary-color;
+}
+
+.gmail-plate-expanse-wrapper {
+  background: white;
+  margin: 0.4rem;
+  cursor: initial;
+
+  .header-wrapper {
+    border-bottom: 1px solid #CCC;
+    padding: 1rem 0.5rem 0.5rem 0.5rem;
+    cursor: pointer;
+    background: white;
+
+    .header-text {
+      font-size: 1.1rem;
+    }
+
+    .date-wrapper {
+      font-size: 0.85rem;
+      text-align: right;
+      color: #888;
+    }
+  }
+
+  .top-wrapper {
+
+    .sender-to-wrapper {
+      font-size: 0.85rem;
+      padding-left: 0.4rem;
+      padding-top: 0.5rem;
+
+      .sender-wrapper {
+
+        .sender {
+
+          .secondary {
+            color: #999;
+          }
+        }
+      }
+
+      .to-wrapper {
+
+        .to {
+
+        }
+      }
+    }
+
+  }
+
+  .message-body-wrapper {
+    padding: 1.2rem 0.7rem;
+
+    .message-body {
+      zoom: 0.9;
+      -moz-transform: scale(0.9)
+    }
+  }
+
+  .bottom-wrapper {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    border-top: 1px solid #CCC;
+
+    .left-wrapper {
+
+      .reply-text {
+        cursor: pointer;
+        border: 1px solid #CCC;
+        padding: 0.8rem;
+        font-weight: bold;
+        color: $plate-primary-color;
+
+        &:hover {
+          color: $plate-primary-dark-color-lighter;
+        }
+
+        &:active {
+          color: $plate-primary-dark-color;
+        }
+      }
+    }
+
+    .right-wrapper {
+
+    }
+
+    .reply-box {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+
+      .top-wrapper {
+        padding: 0.6rem;
+
+        .sender {
+          display: flex;
+          justify-content: space-between;
+          font-size: 0.85rem;
+          .secondary {
+            color: #999;
+          }
+
+          .edit-subject-button {
+
+          }
+        }
+
+
+        .subject-content {
+
+        }
+
+      }
+      .reply-box-content {
+
+      }
+      .bottom-wrapper {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.8rem;
+      }
+    }
+  }
+}

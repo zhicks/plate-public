@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- No analytics on this page -->
+    <title>Plate.Work</title>
+    <script>
+        var token = localStorage.getItem('id_token');
+        if (token) {
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("GET", "{{url}}", true);
+            xhttp.setRequestHeader("Authorization", "Bearer " +  token);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.onreadystatechange = function() {
+                if (xhttp.readyState == 4 && xhttp.status == 200) {
+                    try {
+                        var authUrl = xhttp.response;
+                        if (authUrl) {
+                            window.location.replace(authUrl);
+                        } else {
+                            window.location.replace('/login');
+                        }
+                    } catch (e) {
+                        window.location.replace('/login');
+                    }
+                } else {
+                    // If it fails just forward
+                    window.location.replace('/login');
+                }
+            };
+            xhttp.send();
+        } else {
+            window.location.replace('/login');
+        }
+    </script>
+</head>
+<body>
+</body>
+</html>
+

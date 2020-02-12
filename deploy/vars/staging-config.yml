@@ -1,0 +1,26 @@
+---
+## Staging secrets
+
+PLATE_ENVIRONMENT:
+  NODE_PORT: "{{ nodejs_app_port }}"
+  NODE_ENV: "production"
+  JWT_SECRET: "STAGING_JWT_SECRET"
+  DB_URI: "mongodb://localhost/plate"
+  DB_USER: "plate"
+  DB_PASS: "_WZ^y<h;VUBmM8_L"
+  GOOGLE_CLIENT_ID: "465840796478-39bl33r0dj1bkkvqolqcb1ajcv6ip0l7.apps.googleusercontent.com"
+  GOOGLE_CLIENT_SECRET: "trOyF1uL8nuEYZJPsUyl6ypn"
+  GOOGLE_CALLBACK_URL: "http://staging-01.plate.work/auth/googlecallback"
+  GMAIL_CALLBACK_URL: "http://staging-01.plate.work/auth/gmailcallback"
+  SLACK_CLIENT_ID: "41633133957.73233839634"
+  SLACK_CLIENT_SECRET: "cb2768ba205beacd09bbc6843cd6cae1"
+  SLACK_CALLBACK_URL: "http://staging-01.plate.work/auth/slackcallback"
+  SENDGRID_API_KEY: "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"
+  DEPLOY_BY_USER: "{{ lookup('env','USER') | default('someone awesome') }}"
+  FEEDBACK_EMAIL: "tommytomatoe+2h1wuiqw6s73n6p4wql+2mtg7t4bb8ih0wfkvfn+01k61edfbc@boards.trello.com"
+  NEW_SIGNUP_EMAIL: "tommytomatoe+2h1wuiqw6s73n6p4wql+2mtg5ijsmubyotvd77f+1m7unw3c9y@boards.trello.com"
+  AWS_ACCESS_KEY_ID: "AKIAIKAQFTROVVL65YEA"
+  AWS_SECRET_ACCESS_KEY: "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"
+  AWS_BUCKET_NAME: "plate-user-items-staging"
+  STRIPE_SECRET_KEY: "sk_test_JGWonm2ki9hFHF04JVM2IIWm"
+  STRIPE_PUBLISHABLE_KEY: "pk_test_RfuLpSKHM0iwlIy84zyRVUmd"

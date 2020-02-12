@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <base href="/" />
+
+    <title>{{ initialTitle }}</title>
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/shared/assets/images/fav/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/shared/assets/images/fav/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/shared/assets/images/fav/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/shared/assets/images/fav/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="/shared/assets/images/fav/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/shared/assets/images/fav/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/shared/assets/images/fav/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/shared/assets/images/fav/apple-touch-icon-152x152.png" />
+    <link rel="shortcut icon" type="image/png" href="/shared/assets/images/fav/favicon-196x196.png" sizes="196x196" />
+    <link rel="shortcut icon" type="image/png" href="/shared/assets/images/fav/favicon-96x96.png" sizes="96x96" />
+    <link rel="shortcut icon" type="image/png" href="/shared/assets/images/fav/favicon-32x32.png" sizes="32x32" />
+    <link rel="shortcut icon" type="image/png" href="/shared/assets/images/fav/favicon-16x16.png" sizes="16x16" />
+    <link rel="shortcut icon" type="image/png" href="/shared/assets/images/fav/favicon-128.png" sizes="128x128" />
+
+    <meta name="application-name" content="&nbsp;" />
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="/shared/assets/images/fav/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="/shared/assets/images/fav/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="/shared/assets/images/fav/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="/shared/assets/images/fav/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="/shared/assets/images/fav/mstile-310x310.png" />
+
+    <meta property="og:title" content="{{ initialTitle }}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.plate.work" />
+    <meta property="og:image" content="https://www.plate.work/shared/assets/images/plate-showcase.png" />
+
+    <script>
+        localStorage.removeItem('invite_details');
+    </script>
+
+    <!-- build:outside-ga -->
+    <!-- endbuild -->
+
+    <!-- build:shared-css -->
+    <!-- endbuild -->
+
+    <!-- build:outside-css -->
+    <!-- endbuild -->
+
+</head>
+
+<body>
+    <plate-index-widget></plate-index-widget>
+    <!-- Following Menu -->
+    <div class="ui top fixed hidden menu">
+        <div class="ui container">
+            <a class="item" href="/" style="font-weight:900;">Plate</a>
+            <div class="right menu">
+                <div class="item">
+                    <a class="ui button" href="/login">Login <i class="sign in icon"></i></a>
+                </div>
+                <div class="item">
+                    <a class="ui primary button" href="/register">Register <i class="heart icon"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="pusher">
+        <!-- Navigation Bar - Header -->
+        <div id="main-menu" class="ui fixed inverted borderless menu">
+            <div class="ui container">
+                <a class="item" href="/" style="font-weight:900;">Plate</a>
+                <div class="right menu">
+                    <div class="item">
+                        <a class="ui button" href="/login">Login <i class="sign in icon"></i></a>
+                    </div>
+                    <div class="item">
+                        <a class="ui primary button" href="/register">Register <i class="heart icon"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Navigation Bar - Header -->
+
+        {% block content %}{% endblock %}
+
+        <!-- Footer -->
+        <div class="ui inverted vertical footer segment">
+            <div class="ui container">
+                <div class="ui center aligned inverted divided equal height stackable grid">
+                    <div class="three wide column">
+                        <h4 class="ui inverted header">Plate</h4>
+                        <div class="ui inverted link list">
+                            <a href="/" class="item">Home</a>
+                            <a href="/changelog" class="item">Updates</a>
+                            <a href="/guide" class="item">Plate Guide</a>
+                            <a href="/plate-api" class="item">API</a>
+                        </div>
+                    </div>
+                    <div class="three wide column">
+                        <h4 class="ui inverted header">Useful Links</h4>
+                        <div class="ui inverted link list">
+                            <a href="mailto:hello@plate.work" class="item">Contact Us</a>
+                            <a href="mailto:hello@plate.work" class="item">Support</a>
+                            <a href="/terms-of-service" class="item">Terms of Service</a>
+                            <a href="/privacy-policy" class="item">Privacy Policy</a>
+                        </div>
+                    </div>
+                    <div class="ten wide column">
+                        <h4 class="ui inverted header">Try Plate</h4>
+                        <p>Fall in love with Plate and see what the fuss is about.</p>
+                        <a class="ui inverted large button" href="/register">Sign up for Early Access</a>
+                    </div>
+                </div>
+                <div class="ui inverted section divider"></div>
+                <div class="ui grid">
+                    <div class="left floated left aligned seven wide column">
+                        <div class="content">
+                            <div class="ui horizontal inverted middle aligned small divided link list">
+                                <a class="item" href="/">&copy; Plate Work, Inc 2017</a>
+                                <a class="item">Made in Knoxville</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="right floated right aligned nine wide column">
+                        <div class="ui inverted right floated content">
+                            <div class="ui horizontal inverted middle aligned small divided link list">
+                                <div class="item">
+                                    <a class="item" href="mailto:hello@plate.com">Contact us</a>
+                                </div>
+                                <div class="item">
+                                    <a href="https://github.com/plateworkhq" target="_blank"><i class="github icon"></i></a>
+                                </div>
+                                <div class="item">
+                                    <a href="https://twitter.com/plateworkhq" target="_blank"><i class="twitter icon"></i></a>
+                                </div>
+                                <div class="item">
+                                    <a href="https://www.facebook.com/plateapp" target="_blank"><i class="facebook f icon"></i></a>
+                                </div>
+                                <div class="item">
+                                    <a href="https://www.linkedin.com/company/plate-work-inc/" target="_blank"><i class="linkedin icon"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer -->
+    </div>
+    <!-- pusher -->
+
+    <!-- build:shared-js -->
+    <!-- endbuild -->
+
+    <!-- build:outside-js -->
+    <!-- endbuild -->
+
+</body>
+
+</html>

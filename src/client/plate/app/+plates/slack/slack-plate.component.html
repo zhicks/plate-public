@@ -1,0 +1,190 @@
+<div #plateWrapper class="plate-wrapper" p-sch>
+    <div plate-head-wrapper p-d-handle="1" [attr.p-d-disable]="base.docked ? 'true' : null" class="plate-head-wrapper" [style.background]="base.model.color" (mouseover)="base.hoveringOverHeader = true" (mouseout)="base.hoveringOverHeader = false" (click)="plateHeaderClicked($event)">
+        <div p-d-handle="1" class="left-wrapper">
+            <span class="docked-indicator" [hidden]="!base.docked || base.minimized">Docked</span>
+            <div p-d-handle="1" class="icon-wrapper">
+                <div p-d-handle="1" *ngIf="mode === SlackPlateMode.Default">
+                    <!--<img p-d-handle="1" class="plate-head-icon" src="/shared/assets/images/logo_plate_small.png">-->
+                    <div p-d-handle="1" class="plate-head-icon slack" [zIcon]="{ icon: connectedAppsService.getConnectedAppIcon(ClientConnectedAppType.Slack), type: 'png' }"></div>
+                </div>
+                <div p-d-handle="1" *ngIf="mode !== SlackPlateMode.Default" class="left-arrow-wrapper" (click)="leftArrowBackClicked()">
+                    <i class="left arrow icon"></i>
+                </div>
+            </div>
+            <div p-d-handle="1" class="plate-head-title-wrapper">
+                {{base.model.name}}
+            </div>
+        </div>
+        <div p-d-handle="1" class="right-wrapper">
+            <div class="plate-actions-wrapper" [hidden]="!base.docked && (editingTitleAdHoc || !base.hoveringOverHeader)">
+                <div p-d-handle="1" header-button-wrapper class="header-button-wrapper" (click)="plateSettingsIconClicked()" [ngClass]="{selected: mode === SlackPlateMode.Settings}" [hidden]="base.minimized">
+                    <i p-d-handle="1" class="setting icon"></i>
+                </div>
+                <div p-d-handle="1" header-button-wrapper class="header-button-wrapper" (click)="pinPlateClicked()" style="display: none"> <!-- [hidden]="base.docked" -->
+                    <i p-d-handle="1" class="pin icon"></i>
+                </div>
+                <div p-d-handle="1" header-button-wrapper class="header-button-wrapper" (click)="dockPlateClicked()" [hidden]="base.minimized">
+                    <i p-d-handle="1" class="icon" [ngClass]="base.docked ? 'expand' : 'compress'"></i>
+                </div>
+                <div p-d-handle="1" header-button-wrapper class="header-button-wrapper" (click)="minimizePlateClicked()">
+                    <i p-d-handle="1" class="icon" [ngClass]="base.minimized ? 'chevron up' : 'minus'"></i>
+                </div>
+            </div>
+            <div p-d-handle="1" header-button-wrapper class="header-button-wrapper plate-head-close-wrapper" (click)="closePlateClicked()">
+                <div p-d-handle="1" class="close-icon-wrapper">
+                    <i p-d-handle="1" class="icon remove"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="plate-content-wrapper" p-sch [hidden]="base.minimized">
+        <div *ngIf="mode !== SlackPlateMode.Settings && connectionState === ConnectionStates.NeedsConnection" class="plate-prompt-wrapper ui segment">
+            <h2>Awesome!</h2>
+            <h3>Connect a Slack account to:</h3>
+            <div class="ui list">
+                <!--TODO This list-->
+                <div class="item"><i class="plus icon"></i> Create tasks from Slack messages</div>
+                <div class="item"><i class="search icon"></i> Search across your Slack accounts</div>
+                <div class="item"><i class="slack icon"></i> Chat live inside of Plate</div>
+            </div>
+            <p>And more!</p>
+            <button class="large ui basic button slack-connect-button" (click)="connectSlackClicked()">
+                <div class="slack-z-icon" [zIcon]="{ icon: connectedAppsService.getConnectedAppIcon(ClientConnectedAppType.Slack), type: 'png' }"></div>
+                Connect a Slack account
+            </button>
+        </div>
+
+        <div class="plate-with-subcontainer" *ngIf="mode !== SlackPlateMode.Settings">
+            <div class="plate-subsection-wrapper no-side-padding">
+                <div class="plate-subsection-title-wrapper side-margins">
+                    <div *ngIf="mode === SlackPlateMode.SearchResult">
+                        <div class="plate-subsection-title">#{{searchMatch.channel.name}} - Search Result</div>
+                    </div>
+                    <div class="plate-subsection-title ui dropdown" semanticDropdown *ngIf="selectedChannel && mode !== SlackPlateMode.SearchResult">
+                        <i class="lock icon" [hidden]="!selectedChannel.model.isPrivate"></i>{{!selectedChannel.model.isPrivate ? '#' : ''}}{{selectedChannel.model.name}}<i class="dropdown icon"></i>
+                        <div class="menu">
+                            <div class="item" *ngFor="let slackChannel of slackChannels | orderBy:['+model.name']" (click)="slackChannelClicked(slackChannel)">
+                                <i class="icon" [ngClass]="selectedChannel.model.name === slackChannel.model.name ? 'checkmark' : ''"></i>
+                                <span [ngStyle]="{'font-weight': selectedChannel.model.name === slackChannel.model.name ? 'bold' : ''}">
+                                    <i class="lock icon" [hidden]="!slackChannel.model.isPrivate"></i>{{!slackChannel.model.isPrivate ? '#' : ''}}{{slackChannel.model.name}}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="plate-subsection-title-right-wrapper">
+                        <div class="plate-subsection-minimize-expand-wrapper">
+                            <div class="plate-subsection-minimize-expand" style="display: none">
+                                <i class="minus square icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="position: relative; display: flex; flex: 1; flex-direction: column;" *ngIf="connectionState === ConnectionStates.Waiting">
+                    <div class="ui basic segment" style="flex: 0.3;">
+                        <p></p>
+                        <div class="ui active loader"></div>
+                    </div>
+                </div>
+                <div slack-plate-messages-wrapper class="slack-plate-messages-wrapper" *ngIf="connectionState === ConnectionStates.Connected">
+                    <div [attr.plateId]="base.model.id" plate-drag="slack" class="plate-subsection-content-wrapper" [dragula]="'plate-items-drag'">
+                        <div [attr.id]="message.domId" class="plate-item-wrapper slack listed compact side-margins no-borders" listenForNew (onNew)="newMessageAddedOnDom($event)" *ngFor="let message of slackMessages; let itemIndex = index;">
+                            <div class="listed-item-content-wrapper">
+                                <div class="slack-message-pic" *ngIf="mode === SlackPlateMode.Default">
+                                    <img *ngIf="message.model.userObj.image_32" [attr.src]="message.model.userObj.image_32">
+                                </div>
+                                <div class="slack-right-wrapper">
+                                    <div class="plate-item-top-wrapper">
+                                        <div class="plate-item-title-wrapper">
+                                        <span class="plate-item-title">
+                                            <span new-prompt class="new-prompt-drag"></span>
+                                            <span>
+                                                {{message.model.userObj.name || message.model.username}}
+                                            </span>
+                                        </span>
+                                        <span slack-plate-item-ts class="slack-plate-item-ts">
+                                            {{message.model.ts | moment:'slack'}}
+                                        </span>
+                                        </div>
+                                    </div>
+                                    <div class="plate-item-detail-wrapper">
+                                        <div class="item-small-detail">
+                                            <span>
+                                                {{message.model.text}}
+                                            </span>
+                                        </div>
+                                        <div class="item-small-detail" *ngFor="let submessage of message.submessages">
+                                            <span>
+                                                {{submessage.model.text}}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slack-plate-bottom-wrapper" *ngIf="mode !== SlackPlateMode.SearchResult && selectedChannel">
+                    <textarea class="plate-textarea" rows="1" placeholder="Message {{selectedChannel.model.name}}" [(ngModel)]="currentSlackMessage" (keydown.enter)="onEnterPressedForSlackMessage($event)"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="plate-default plate-settings" *ngIf="mode === SlackPlateMode.Settings">
+            <div>
+                <div class="ui basic segment">
+                    <h3>Connected App Settings</h3>
+                </div>
+                <div class="ui segment">
+                    <div class="">
+                        <h3 class="ui header without-vertical-margins">Name</h3>
+                        <div class="ui input large fluid">
+                            <input type="text" placeholder="Plate Name" (keyup.enter)="plateNameEditEnterPressed()" (blur)="plateNameEditInputBlur()" [(ngModel)]="editingPlateName">
+                        </div>
+                    </div>
+                    <div style="margin-top: 1rem;" class="">
+                        <h3 class="ui header without-vertical-margins">Color</h3>
+                        <div class="plate-color-wrapper" *ngIf="!editingColor">
+                            <div class="plate-color" [style.background]="base.model.color"></div>
+                            <button class="ui icon button basic" (click)="editColorClicked()">
+                                <i class="write icon"></i>
+                            </button>
+                        </div>
+                        <div *ngIf="editingColor">
+                            <div class="plate-color-picker-wrapper">
+                                <div class="plate-color-picker-item" [style.background]="color" *ngFor="let color of colors" (click)="colorSelected(color)">
+                                    <i *ngIf="color == base.model.color" class="checkmark icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ui basic segment" style="margin-top: 3rem;">
+                <div class="archive-wrapper">
+                    <div class="ui basic red button icon" (click)="archivePlateClickedShowDialog()">
+                        <i class="remove icon"></i>
+                        Archive this Connected App
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Dialog-->
+<div #archiveConfirmDialog class="ui small modal">
+    <div class="header">
+        Archive Plate
+    </div>
+    <div class="content">
+        <p>Archive "{{base.model.name}}"?  <b>There is no way to undo this yet!</b></p>
+    </div>
+    <div class="actions">
+        <div class="ui negative button" (click)="archivedPlateClicked()">
+            <i class="remove icon"></i>
+            Yes, archive
+        </div>
+        <div class="ui button" (click)="nevermindArchivePlateClicked()">
+            Nevermind
+        </div>
+    </div>
+</div>

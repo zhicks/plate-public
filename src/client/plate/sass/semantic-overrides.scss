@@ -1,0 +1,29 @@
+// Some manual semantic overrides for when editing the theme is overkill.
+
+.ui.dropdown .menu > .divider {
+  margin: 0 !important;
+}
+
+.ui.button.borderless {
+  box-shadow: none !important;
+}
+
+// Don't animate the dimmer
+.ui.dimmer {
+  transition: background-color 0s linear !important;
+  animation-duration: 0s !important;
+}
+
+.ui.modal {
+  border-radius: 1rem;
+}
+
+.ui.table {
+  border-radius: 0 !important;
+}
+
+.ui.list.padded-items {
+  .item {
+    padding: 1rem !important;
+  }
+}

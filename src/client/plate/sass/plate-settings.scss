@@ -1,0 +1,87 @@
+plate-main-settings {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+
+  .team-name-selection-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .settings-header-wrapper {
+    margin-top: 1.3rem;
+    padding-left: 1rem;
+
+    .settings-header {
+      color: #555 !important;
+    }
+  }
+
+  .team-invite-wrapper {
+
+    .team-invite-buttons {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+  }
+
+
+  .team-name-wrapper {
+    display: flex;
+    margin-bottom: 1.2rem;
+    align-items: center;
+
+    .team-name {
+      font-size: 1.3em;
+      margin-right: 1rem;
+    }
+  }
+
+  .team-color-wrapper {
+    display: flex;
+    margin-bottom: 1.2rem;
+    align-items: center;
+
+    .team-color {
+      width: 2.3rem;
+      height: 2.3rem;
+      margin-right: 1rem;
+      border-radius: 0.4rem;
+    }
+  }
+
+  .team-wrapper {
+
+    .pending-invitation {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .settings-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 auto;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+
+    .tabs-wrapper {
+      justify-content: center;
+    }
+
+    .active-tab-content-wrapper {
+      flex: 1 0 auto;
+    }
+  }
+}
+
+.team-list {
+  .plate-business-indicator {
+    color: #0066CC;
+    font-weight: normal;
+    font-size: 0.8rem;
+    padding-left: 0.5rem;
+  }
+}

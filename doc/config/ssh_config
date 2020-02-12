@@ -1,0 +1,37 @@
+# Plate Config entries
+
+# Instructions
+## 1. Copy the entries to ~/.ssh/config
+## 2. Replace IdentityFile with appropriate id_rsa key
+
+# Servers have been hardened
+# SSH will work only on port 1204 (22 has been disabled)
+Host load.plate.work
+  Hostname 192.241.156.89
+  User plate
+  Port 1204
+  IdentityFile ~/.ssh/id_rsa
+
+Host prod-01.plate.work
+  Hostname 192.241.157.192
+  User plate
+  Port 1204
+  IdentityFile ~/.ssh/id_rsa
+
+Host prod-02.plate.work
+  Hostname 192.241.156.153
+  User plate
+  Port 1204
+  IdentityFile ~/.ssh/id_rsa
+
+Host staging-01.plate.work
+  Hostname 192.241.141.148
+  User plate
+  Port 1204
+  IdentityFile ~/.ssh/id_rsa
+
+Host mongo-01.plate.work
+  Hostname 67.205.129.225
+  User plate
+  Port 1204
+  IdentityFile ~/.ssh/id_rsa

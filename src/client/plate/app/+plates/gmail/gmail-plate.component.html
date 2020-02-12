@@ -1,0 +1,357 @@
+<div class="plate-wrapper" p-sch>
+    <div plate-head-wrapper p-d-handle="1" [attr.p-d-disable]="base.docked ? 'true' : null" class="plate-head-wrapper" [style.background]="base.model.color" (mouseover)="base.hoveringOverHeader = true" (mouseout)="base.hoveringOverHeader = false" (click)="plateHeaderClicked($event)">
+        <div p-d-handle="1" class="left-wrapper">
+            <span class="docked-indicator" [hidden]="!base.docked || base.minimized">Docked</span>
+            <div p-d-handle="1" class="icon-wrapper">
+                <div p-d-handle="1" *ngIf="mode === 0">
+                    <!--<img p-d-handle="1" class="plate-head-icon" src="/shared/assets/images/logo_plate_small.png">-->
+                    <div p-d-handle="1" class="plate-head-icon gmail" [zIcon]="{ icon: connectedAppsService.getConnectedAppIcon(ClientConnectedAppType.Gmail), type: 'png' }"></div>
+                </div>
+                <div p-d-handle="1" *ngIf="mode !== 0" class="left-arrow-wrapper" (click)="leftArrowBackClicked()">
+                    <i class="left arrow icon"></i>
+                </div>
+            </div>
+            <div p-d-handle="1" class="plate-head-title-wrapper">
+                {{base.model.name}}
+            </div>
+        </div>
+        <div p-d-handle="1" class="right-wrapper">
+            <div class="plate-actions-wrapper" [hidden]="!base.docked && (editingTitleAdHoc || !base.hoveringOverHeader)">
+                <div p-d-handle="1" header-button-wrapper class="header-button-wrapper" (click)="plateSettingsIconClicked()" [ngClass]="{selected: mode === GmailPlateMode.Settings}" [hidden]="base.minimized">
+                    <i p-d-handle="1" class="setting icon"></i>
+                </div>
+                <div p-d-handle="1" header-button-wrapper class="header-button-wrapper" (click)="pinPlateClicked()" style="display: none"> <!-- [hidden]="base.docked" -->
+                    <i p-d-handle="1" class="pin icon"></i>
+                </div>
+                <div p-d-handle="1" header-button-wrapper class="header-button-wrapper" (click)="dockPlateClicked()" [hidden]="base.minimized">
+                    <i p-d-handle="1" class="icon" [ngClass]="base.docked ? 'expand' : 'compress'"></i>
+                </div>
+                <div p-d-handle="1" header-button-wrapper class="header-button-wrapper" (click)="minimizePlateClicked()">
+                    <i p-d-handle="1" class="icon" [ngClass]="base.minimized ? 'chevron up' : 'minus'"></i>
+                </div>
+            </div>
+            <div p-d-handle="1" header-button-wrapper class="header-button-wrapper plate-head-close-wrapper" (click)="closePlateClicked()">
+                <div p-d-handle="1" class="close-icon-wrapper">
+                    <i p-d-handle="1" class="icon remove"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div gmail-plate-content-wrapper class="plate-content-wrapper" #gmailPlateContentWrapper p-sch [hidden]="base.minimized">
+        <!--[ngStyle]="{background: connectionState === ConnectionStates.Waiting ? '#D8D8D8' : null}"-->
+
+        <div style="position: relative; display: flex; flex: 1; flex-direction: column;" *ngIf="mode !== GmailPlateMode.IndividualEmail && connectionState === ConnectionStates.Waiting">
+            <div class="ui basic segment" style="flex: 0.3;">
+                <p></p>
+                <div class="ui active loader"></div>
+            </div>
+        </div>
+
+        <div *ngIf="mode !== GmailPlateMode.Settings && connectionState === ConnectionStates.NeedsConnection" class="plate-prompt-wrapper ui segment">
+            <h2>Awesome!</h2>
+            <h3>Connect a Gmail account to:</h3>
+            <div class="ui list">
+                <div class="item"><i class="plus icon"></i> Create tasks from emails</div>
+                <div class="item"><i class="search icon"></i> Search across your Gmail accounts</div>
+                <div class="item"><i class="checkmark icon"></i> Mark as emails as read</div>
+            </div>
+            <p>And more!</p>
+            <button class="large ui google plus button" (click)="connectGmailAccountClicked()">
+                Connect a Gmail account
+            </button>
+        </div>
+
+        <div *ngIf="mode === GmailPlateMode.IndividualEmail">
+            <div class="plate-subsection-content-wrapper">
+                <plate-gmail-message-expanse [gmailPlateComponent]="self" [message]="individualEmail" [gmailPlateContentWrapper]="gmailPlateContentWrapper"></plate-gmail-message-expanse>
+            </div>
+        </div>
+
+        <div *ngIf="mode === GmailPlateMode.Default && connectionState === ConnectionStates.Connected">
+            <!--<div class="plate-subsection-wrapper no-side-padding" *ngIf="openPlateTasks.length">-->
+                <!--<div class="plate-subsection-title-wrapper side-margins">-->
+                    <!--<div class="plate-subsection-title ui dropdown">-->
+                        <!--OPEN PLATE TASKS-->
+                    <!--</div>-->
+                    <!--<div class="plate-subsection-title-right-wrapper">-->
+                        <!--<div class="plate-subsection-minimize-expand-wrapper">-->
+                            <!--<div class="plate-subsection-minimize-expand">-->
+                                <!--<i class="minus square icon"></i>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="plate-subsection-content-wrapper">-->
+                <!--<div class="plate-item-wrapper listed compact side-margins" *ngFor="let task of openPlateTasks; let itemIndex = index;">-->
+                    <!--<div class="listed-item-content-wrapper">-->
+                        <!--<div class="plate-item-top-wrapper">-->
+                            <!--<div class="plate-item-title-wrapper">-->
+                                <!--<div class="plate-item-checkbox-wrapper">-->
+                                    <!--<div class="plate-item-checkbox">-->
+                                        <!--<i class="square outline icon"></i>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                                <!--<span class="plate-item-title">-->
+                                        <!--<span>-->
+                                            <!--{{task.model.title}}-->
+                                        <!--</span>-->
+                                    <!--</span>-->
+                            <!--</div>-->
+                            <!--&lt;!&ndash;<div class="plate-item-right-wrapper" *ngFor="let tag of item.model.tags;">&ndash;&gt;-->
+                            <!--&lt;!&ndash;<button class="ui button blue mini plate-item-tag">#{{tag.name}}</button>&ndash;&gt;-->
+                            <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                        <!--</div>-->
+                        <!--<div class="plate-item-small-detail-wrapper">-->
+                                <!--<span class="item-small-detail">-->
+                                    <!--<span>-->
+                                        <!--{{task.model.subtitle}}-->
+                                    <!--</span>-->
+                                    <!--<span class="item-small-detail-secondary">-->
+                                        <!-- - {{task.model.text}}-->
+                                    <!--</span>-->
+                                <!--</span>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+
+
+            <div class="plate-subsection-wrapper no-side-padding">
+                <div class="plate-subsection-title-wrapper side-margins" *ngIf="selectedLabel">
+                    <div class="plate-subsection-title ui dropdown" semanticDropdown>
+                        {{selectedLabel.model.name}}<i class="dropdown icon"></i>
+                        <div class="menu">
+                            <div class="item" *ngFor="let label of gmailLabels | orderBy:['+model.name']" (click)="gmailLabelClicked(label)">
+                                <i class="icon" [ngClass]="selectedLabel.model.name === label.model.name ? 'checkmark' : ''"></i>
+                                <span [ngStyle]="{'font-weight': selectedLabel.model.name === label.model.name ? 'bold' : ''}">
+                                    {{label.model.name}}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="plate-subsection-title-right-wrapper">
+                        <div class="plate-subsection-minimize-expand-wrapper">
+                            <div class="plate-subsection-minimize-expand" style="display: none">
+                                <i class="minus square icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div [attr.plateId]="base.model.id" plate-drag="gmail" class="plate-subsection-content-wrapper" [dragula]="'plate-items-drag'">
+                    <div [attr.id]="message.id" class="plate-item-wrapper gmail listed compact side-margins" *ngFor="let message of gmailMessages; let itemIndex = index;" listenForNew (onNew)="newMessageAddedOnDom($event)" [ngClass]="{'inactive': !message.unread, 'expanded': message.expanded !== 0}" (click)="gmailUnexpandedMessageClicked(message)">
+                        <div #itemContentWrapper class="listed-item-content-wrapper">
+                            <div class="plate-item-top-wrapper" style="margin-left: 0.5rem">
+                                <!--Margin left style until we show checkboxes-->
+                                <div class="plate-item-title-wrapper">
+                                    <div class="plate-item-checkbox-wrapper" style="display: none">
+                                        <div class="plate-item-checkbox">
+                                            <i class="square outline icon"></i>
+                                        </div>
+                                    </div>
+                                    <span class="plate-item-title">
+                                        <span [ngStyle]="{'font-weight': message.unread ? 'bold' : ''}">
+                                            {{message.from}}
+                                        </span>
+                                        <span class="gmail-plate-item-ts">
+                                            {{message.date | moment:'time'}}
+                                        </span>
+                                    </span>
+                                </div>
+                                <!--<div class="plate-item-right-wrapper" *ngFor="let tag of item.model.tags;">-->
+                                    <!--<button class="ui button blue mini plate-item-tag">#{{tag.name}}</button>-->
+                                <!--</div>-->
+                            </div>
+                            <div class="plate-item-small-detail-wrapper" style="margin-left: 0.5rem">
+                                <!--Margin left style until we show checkboxes-->
+                                <span class="item-small-detail">
+                                    <span [ngStyle]="{'font-weight': message.unread ? 'bold' : ''}">
+                                        {{message.subject}}
+                                    </span>
+                                    <span class="item-small-detail-secondary">
+                                        - {{message.snippet}}
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                        <div *ngIf="message.expanded !== MessageUIExpansion.NotExpanded" style="width: 100%;">
+                            <plate-gmail-message-expanse [gmailPlateComponent]="self" [message]="message" [originalContentWrapper]="itemContentWrapper" [gmailPlateContentWrapper]="gmailPlateContentWrapper"></plate-gmail-message-expanse>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="plate-default plate-settings" *ngIf="mode === GmailPlateMode.Settings">
+
+            <div>
+                <div>
+                    <div class="">
+                        <h4>Connected App Settings</h4>
+                    </div>
+                    <div class="ui segment" style="margin-top: 0.5rem;">
+                        <div class="">
+                            <h5 class="ui header without-vertical-margins">Name</h5>
+                            <div class="ui input fluid">
+                                <input type="text" placeholder="Plate Name" (keyup.enter)="plateNameEditEnterPressed()" (blur)="plateNameEditInputBlur()" [(ngModel)]="editingPlateName">
+                            </div>
+                        </div>
+                        <div style="margin-top: 1rem;" class="">
+                            <h5 class="ui header without-vertical-margins">Color</h5>
+                            <div class="plate-color-wrapper small" *ngIf="!editingColor">
+                                <div class="plate-color" [style.background]="base.model.color"></div>
+                                <button class="ui icon tiny button basic" (click)="editColorClicked()">
+                                    <i class="write icon"></i>
+                                </button>
+                            </div>
+                            <div *ngIf="editingColor">
+                                <div class="plate-color-picker-wrapper">
+                                    <div class="plate-color-picker-item" [style.background]="color" *ngFor="let color of colors" (click)="colorSelected(color)">
+                                        <i *ngIf="color == base.model.color" class="checkmark icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="padding-top: 1rem;">
+                    <div class="">
+                        <h4>Automation</h4>
+                    </div>
+                    <div class="ui segment" style="margin-top: 0.5rem;">
+                        <div style="font-size: 0.8rem; color: #666; padding-bottom: 1rem;">
+                            <i class="info circle icon"></i> Set up rules to auto create Plate Items based on the content of an email.
+                        </div>
+                        <div class="automation-rule-wrapper" *ngIf="currentlyAddingAutomationRule" [class.waiting]="waitingToSaveAutomationRule">
+                            <div class="automation-rule-wrapper-segment">
+                                <div class="automation-qualifier-title">
+                                    When the email's:
+                                </div>
+                                <div class="automation-qualifier-content">
+                                    <div class="ui dropdown basic small button automation-dropdown" semanticDropdown>
+                                        {{currentlyAddingAutomationRule.model.when[0]}} <i class="dropdown icon generic-padding-left"></i>
+                                        <div class="menu">
+                                            <div class="item" *ngFor="let whenString of automationRuleWhenObjectOptions" (click)="automationRuleWhenObjectClicked(whenString)">
+                                                {{whenString}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="automation-rule-wrapper-segment">
+                                <div class="automation-qualifier-title">
+                                    Contains:
+                                </div>
+                                <div class="automation-qualifier-content">
+                                    <div class="ui input fluid automation-text-input-wrapper">
+                                        <input type="text" placeholder="Some text" [(ngModel)]="currentlyAddingAutomationRule.model.contains[0]">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="automation-rule-wrapper-segment">
+                                <div class="automation-qualifier-title">
+                                    Do this:
+                                </div>
+                                <div class="automation-qualifier-content">
+                                    <div class="ui dropdown basic small button automation-dropdown" semanticDropdown>
+                                        {{getAutomationActionStringFromEnum(currentlyAddingAutomationRule.model.action)}} <i class="dropdown icon generic-padding-left"></i>
+                                        <div class="menu">
+                                            <div class="item" *ngFor="let actionObject of automationRuleActionObjectOptions" (click)="automationRuleActionObjectClicked(actionObject)">
+                                                {{actionObject.text}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="automation-rule-wrapper-segment">
+                                <div class="automation-qualifier-title">
+                                    Into this Plate:
+                                </div>
+                                <div class="automation-qualifier-content">
+                                    <div class="ui scrolling dropdown small basic button automation-dropdown" semanticDropdown>
+                                        <div class="flex">
+                                            <div style="border-radius: 0.2rem; width: 14px; height: 14px; margin-right: 0.4rem; flex-shrink: 0" [style.background]="currentlyAddingAutomationRule.destPlate.model.color"></div>
+                                            {{currentlyAddingAutomationRule.destPlate.model.name}} <i class="dropdown icon generic-padding-left"></i>
+                                        </div>
+                                        <div class="menu">
+                                            <div class="item flex" *ngFor="let plate of getPlates()" (click)="plateSelectedForAutomationRuleClicked(plate)">
+                                                <div style="border-radius: 0.2rem; width: 14px; height: 14px; margin-right: 0.4rem; flex-shrink: 0" [style.background]="plate.model.color"></div> {{plate.model.name}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="automation-rule-wrapper-segment">
+                                <div class="automation-qualifier-title">
+                                    In this Header:
+                                </div>
+                                <div class="automation-qualifier-content">
+                                    <div class="ui scrolling dropdown small basic button automation-dropdown" semanticDropdown [class.disabled]="!currentlyAddingAutomationRule.destPlate?.model?.headers.length">
+                                        <div class="flex">
+                                            {{currentlyAddingAutomationRule.destHeader.name}} <i class="dropdown icon generic-padding-left"></i>
+                                        </div>
+                                        <div class="menu" *ngIf="currentlyAddingAutomationRule.destPlate.model.headers">
+                                            <div class="item flex" *ngFor="let header of currentlyAddingAutomationRule.destPlate.model.headers" (click)="headerSelectedForAutomationRuleClicked(header)">
+                                                {{header.name}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div *ngIf="currentlyAddingAutomationRule">
+                            <button class="ui fluid labeled icon primary button" (click)="saveAutomationRuleClicked()" [class.disabled]="waitingToSaveAutomationRule"><i class="checkmark icon"></i>Save Automation Rule</button>
+                        </div>
+                        <div *ngIf="!currentlyAddingAutomationRule">
+                            <button class="ui labeled icon primary button" (click)="addAutomationRuleClicked()" [class.disabled]="noPlatesForAutomationRule"><i class="plus icon"></i>Add an automation rule</button>
+                        </div>
+                        <div *ngIf="noPlatesForAutomationRule">
+                            You need at least one Plate to create an automation rule.
+                        </div>
+
+                        <div style="padding-top: 1.5rem; font-weight: bold" *ngIf="automationRules.length">
+                            Current Rules
+                        </div>
+                        <div class="automation-rule-wrapper read ui segment" *ngFor="let automationRule of automationRules">
+                            <div class="automation-rule-read-text">
+                                When the email's <b>{{automationRule.model.when[0]}}</b> contains <i>"{{automationRule.model.contains[0]}}"</i>,
+                                {{getAutomationActionStringFromEnum(automationRule.model.action)}} in <b>{{automationRule.destPlate.model.name}}: {{automationRule.destHeader?.name}}.</b>
+                            </div>
+                            <div class="automation-rule-read-actions">
+                                <button class="ui borderless button basic tiny" (click)="deleteAutomationRuleClicked(automationRule)"><i class="trash icon"></i> Delete this rule</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui basic segment" style="margin-top: 3rem;">
+                <div class="archive-wrapper">
+                    <div class="ui basic red button icon" (click)="archivePlateClickedShowDialog()">
+                        <i class="remove icon"></i>
+                        Archive this Connected App
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Dialog-->
+<div #archiveConfirmDialog class="ui small modal">
+    <div class="header">
+        Archive Plate
+    </div>
+    <div class="content">
+        <p>Archive "{{base.model.name}}"?  <b>There is no way to undo this yet!</b></p>
+    </div>
+    <div class="actions">
+        <div class="ui negative button" (click)="archivedPlateClicked()">
+            <i class="remove icon"></i>
+            Yes, archive
+        </div>
+        <div class="ui button" (click)="nevermindArchivePlateClicked()">
+            Nevermind
+        </div>
+    </div>
+</div>

@@ -1,0 +1,20 @@
+.idea
+.vscode
+node_modules
+dist
+src/client/typings/globals/
+src/client/typings/modules/
+src/server/package.json
+src/server/typings/globals/
+src/server/typings/modules/
+src/server/**/*.js
+conf.conf
+typings/modules
+typings/globals
+**/*.retry
+
+# playground
+playground
+
+# OS X Specifics
+.DS_Store

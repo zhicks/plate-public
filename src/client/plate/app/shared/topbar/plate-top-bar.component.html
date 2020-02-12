@@ -1,0 +1,127 @@
+<div class="ui top attached menu app-top-menu" #plateTopBar>
+
+    <div class="app-top-menu-left">
+        <span plate-sidebar-menu-button class="sidebar-button" style="display: none">
+            <i class="content icon"></i>
+        </span>
+    </div>
+
+    <div class="search-bar-wrapper">
+        <div class="ui input icon small search-bar-input-wrapper"> <!--loading-->
+            <input #searchBarInput type="text" class="search-bar-input" placeholder="Search for anything" [(ngModel)]="searchQuery" (focus)="onSearchBarFocus()" (blur)="onSearchBarBlur($event)">
+            <i class="search icon"></i>
+        </div>
+        <div #searchDropdownMenu class="search-dropdown menu">
+            <div class="item" *ngIf="searchState === SearchState.NotSearching" style="font-style: italic;">Type to begin searching</div>
+            <div class="item" *ngIf="searchState === SearchState.NoResults" style="font-style: italic;">No results</div>
+            <div class="power-plate-prompt" *ngIf="searchState === SearchState.Results">
+                <div>
+                    <button [fadeIn]="'full'" class="ui basic button primary mini see-all-master-button" (mousedown)="createPlateFromSearchResultsClicked()">
+                        Create Plate for this search
+                    </button>
+                </div>
+            </div>
+            <div class="search-result-object-wrapper" *ngFor="let searchObject of searchService.getSearchObjects()">
+                <div class="search-result-object-details">
+                    <div class="search-result-object-title">{{searchObject.name}}</div>
+                    <div class="search-result-object-count-wrapper">
+                        <div class="search-result-object-count" [hidden]="searchObject.type === ClientConnectedAppType.Gmail">{{searchService.getMin(constants.defaultSearchResultCount, searchObject.resultSizeEstimate)}} of {{searchObject.resultSizeEstimate}} Results</div>
+                        <div class="search-result-object-count" [hidden]="searchObject.type !== ClientConnectedAppType.Gmail">Showing {{constants.defaultSearchResultCount}} Results</div>
+                        <!--<div class="ui-plate text-button link blue see-all-button" (mousedown)="seeAllSearchResultsClicked(searchObject)">See All {{searchObject.name}} Results</div>-->
+                    </div>
+                </div>
+                <div search-result-dropdown-wrapper class="item search-result-dropdown-wrapper" *ngFor="let result of searchObject.results" (mousedown)="searchService.searchResultClicked(result)">
+                    <!--Note that we're using mousedown here instead of click - mousedown gets the event before the blur-->
+                    <div class="search-result-icon-wrapper">
+                        <div class="search-result-icon" [ngClass]="result.type === 0 ? 'plate-icon' : ''" [zIcon]="{ icon: result.icon, type: result.iconFileType }"></div>
+                    </div>
+                    <div class="search-result-content-wrapper">
+                        <div class="title-wrapper">
+                            <div class="first">{{result.detailTwo}}</div><div class="second">{{result.title ? '- ' + result.title : ''}}</div><div class="third">{{result.detailOne}}</div>
+                        </div>
+                        <div class="details-wrapper">
+                            <div class="snippet-wrapper">
+                                {{result.snippet}}
+                            </div>
+                            <div class="time-wrapper">
+                                {{result.timestamp | moment:'time'}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-top-menu-right right menu">
+
+        <div #feedbackButton feedback-button class="top-bar-custom-dropdown-button heart top-right-button ui dropdown scrolling" [semanticDropdown]="'1'" (click)="feedbackButtonClicked()">
+            <i class="heart icon" [ngClass]="{'red plate-icon-red': feedbackHeartNotify}"></i>
+            <div class="menu">
+                <div class="item">
+                    <div class="generic-padding"><b>We want your feedback!</b></div>
+                    <div class="generic-padding">Please feel free to send us as many messages as you like right here.</div>
+                    <textarea class="plate-textarea" placeholder="Feedback" type="text" [focusOn]="feedbackFocus" textAreaAutoGrow [(ngModel)]="feedbackMessage" style="min-height: 4rem;"></textarea>
+                    <div class="generic-padding-bottom" style="color: #999;"><small><i>Optional Rating:</i></small></div>
+                    <div class="ui huge star rating generic-padding-bottom" data-rating="0" data-max-rating="5" semanticRating (onRate)="onRatingClicked($event)"></div>
+                    <button class="ui button positive fluid generic-margin-top" (click)="sendFeedbackClicked()">Send Feedback</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="add-button top-right-button ui dropdown" semanticDropdown>
+            <i class="plus icon"></i>
+            <div class="menu">
+                <div class="item" (click)="newTeamMemberClicked()"><i class="add user icon"></i> New Team Member</div>
+                <div class="item" (click)="newPlateClicked()"><i class="plus icon"></i> New Plate</div>
+            </div>
+        </div>
+
+        <div class="top-bar-custom-dropdown-button top-right-button ui dropdown scrolling" semanticDropdown (click)="notificationButtonClicked()">
+            <i class="alarm icon" [ngClass]="{'bright plate-icon-yellow': hasUnseenNotifications }"></i>
+            <div class="menu">
+                <div class="ui dividing header" [hidden]="!unackedNotifications.length">New Notifications</div>
+                <div class="item" *ngFor="let notification of unackedNotifications; let i = index;" (click)="notificationClicked(notification, i)">
+                    <div class="content live">{{notification.message}}</div>
+                    <div class="extra">{{notification.extra}}</div>
+                    <div class="timestamp">{{notification.model.time | moment:'time'}}</div>
+                </div>
+                <div class="ui dividing header old" [hidden]="!ackedNotifications.length">Old</div>
+                <div class="item read" *ngFor="let notification of ackedNotifications; let i = index;" (click)="notificationClicked(notification, i)">
+                    <div class="content">{{notification.message}}</div>
+                    <div class="timestamp">{{notification.model.time | moment:'time'}}</div>
+                </div>
+
+                <div class="item" *ngIf="!unackedNotifications.length && !ackedNotifications.length">
+                    <div class="content"><i>No recent notifications</i></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui dropdown item user-dropdown pointing dropdown top right" *ngIf="user" semanticDropdown>
+            <span class="name-field">{{user.name}}</span><i class="dropdown icon"></i>
+            <div class="menu">
+                <a class="item" [routerLink]="['/settings/profile']"><i class="user icon"></i> Profile</a>
+                <a class="item" [routerLink]="['/settings/team']"><i class="users icon"></i> Teams</a>
+                <div class="divider"></div>
+                <a class="item" href="/logout"><i class="sign out icon"></i> Sign Out</a>
+                <!--<div class="header">Header Item</div>-->
+                <!--<div class="item">-->
+                    <!--<i class="dropdown icon"></i>-->
+                    <!--Sub Menu-->
+                    <!--<div class="menu">-->
+                        <!--<a class="item" href="#">Link Item</a>-->
+                        <!--<a class="item" href="#">Link Item</a>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<a class="item" href="#">Link Item</a>-->
+            </div>
+        </div>
+
+        <div class="item top-right-button" style="cursor: pointer" [ngStyle]="{background: plateRightBarService.visible ? '#0153A5' : 'initial'}" (click)="toggleActivityPaneClicked()">
+            <i class="heartbeat icon"></i>
+        </div>
+
+    </div>
+
+</div>

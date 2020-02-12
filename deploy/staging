@@ -1,0 +1,9 @@
+[app-servers]
+staging-01.plate.work ansible_port=1204
+
+[mongo-servers]
+staging-01.plate.work
+
+[all:vars]
+# Sets the environment to staging (staging) or production (prod)
+env=staging

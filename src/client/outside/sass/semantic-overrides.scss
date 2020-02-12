@@ -1,0 +1,54 @@
+/* TODO - make changes to semantic theme */
+
+@import 'variables';
+
+.ui.inverted.segment,
+.ui.primary.inverted.segment {
+  //background: $plate-primary-color !important;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.ui.button.borderless {
+  box-shadow: none !important;
+}
+
+.ui.large.menu > a {
+  font-size: 2rem;
+}
+.ui.menu {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin: 1rem 0em;
+  font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  background: #FFFFFF;
+  font-weight: normal;
+  border: 1px solid rgba(34, 36, 38, 0.15);
+  box-shadow: 0px 1px 2px 0 rgba(34, 36, 38, 0.15);
+  border-radius: 0.28571429rem;
+  min-height: 2.85714286em;
+}
+.ui.secondary.inverted.menu {
+  background-color: #1B1C1D;
+}
+
+.ui.fixed.inverted.menu {
+  background-color: transparent !important;
+}
+
+.ui.secondary.pointing.menu {
+  margin: 0rem 0rem !important;
+  padding: 0rem 1.2rem !important;
+}
+
+.ui.secondary.pointing.menu .item {
+  margin: 0em 0em !important;
+  padding: 0em 0em !important;
+}
+.ui.secondary.pointing.menu .right.item {
+  margin-left: auto !important;
+}
+
+.ui.secondary.pointing.menu .active.item {
+  border-bottom-style: none !important;
+}

@@ -1,0 +1,258 @@
+<div class="ui container team-invite-wrapper" *ngIf="teamInvitations.length > 0">
+    <div class="ui positive message" *ngFor="let invitation of teamInvitations; let i = index">
+        <div class="header">
+            Team Invitation!
+        </div>
+        <p>You've been invited by <b>{{invitation.inviterName}} ({{invitation.inviterEmail}})</b> to join the team <b>{{invitation.teamName}}</b>.</p>
+        <div class="team-invite-buttons">
+            <button class="ui button primary" (click)="joinTeamClicked(invitation, i)">Join {{invitation.teamName}}</button>
+            <button class="ui button secondary" (click)="noThanksTeamClicked(invitation, i)">No Thanks</button>
+        </div>
+    </div>
+
+    <div class="ui basic segment"></div>
+    <div class="ui divider"></div>
+    <div class="ui basic segment"></div>
+</div>
+<!--<h2 class="ui center aligned icon header" *ngIf="!loading && teams.length">-->
+    <!--<i class="circular users icon"></i>-->
+    <!--<div class="ui dropdown" semanticDropdown>-->
+        <!--<div class="text" style="display: flex; align-items: baseline;">-->
+            <!--{{selectedTeam ? selectedTeam.name : 'New Team'}}-->
+            <!--<i class="dropdown icon" style="font-size: 1rem; margin-left: 0.8rem;"></i>-->
+        <!--</div>-->
+        <!--<div class="menu">-->
+            <!--<div class="item" (click)="changeTeamClicked(team)" *ngFor="let team of teams"><span class="text">{{team.name}}</span></div>-->
+            <!--<div class="item" (click)="createAnotherTeamClicked(team)" *ngIf="selectedTeam"><span class="text"><i>Create Another Team</i></span></div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</h2>-->
+<h2 class="ui center aligned icon header">
+    <i class="circular users icon"></i>
+    Teams
+</h2>
+<div *ngIf="!loading && !selectedTeam && !teams.length">
+    <!--If the user has no teams-->
+    <h4 class="ui center aligned header">You don't have any teams yet.</h4>
+    <div class="add-user-explanation">Create a team and then you can invite members:</div>
+    <div class="ui right action left icon input large fluid">
+        <i class="add users icon"></i>
+        <input type="text" placeholder="Team Name" (keyup.enter)="newTeamClicked()" [(ngModel)]="newTeamNameText">
+        <button class="ui button primary" (click)="newTeamClicked()">Create Team</button>
+    </div>
+</div>
+<div class="ui segment team-list" *ngIf="teams.length">
+    <div class="ui-plate ui-plate-list">
+        <div class="item" [ngClass]="{selected: selectedTeam && selectedTeam.model.id === team.model.id }" *ngFor="let team of teams" (click)="changeTeamClicked(team)">
+            <div class="plate-user-icon-placeholder-wrapper generic-margin-right">
+                <i class="selection-indicator check icon" [ngStyle]="{opacity: selectedTeam && selectedTeam.model.id === team.model.id ? 1 : 0}"></i>
+                <div class="plate-user-icon-placeholder" [ngStyle]="{background: team.model.color}">
+                    &nbsp;
+                </div>
+            </div>
+            <div class="content">
+                <div class="header">
+                    {{team.model.name}}
+                    <span class="plate-business-indicator" [hidden]="!team.isPlateBusiness"><i class="suitcase icon"></i> Plate Business</span>
+                </div>
+                <div class="detail">{{team.sortedMembers?.length + ' Members'}}</div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="ui basic segment center aligned" *ngIf="teams.length">
+    <a (click)="createAnotherTeamClicked()" style="cursor: pointer"><i class="plus icon"></i> Create a new team</a>
+</div>
+<div *ngIf="!loading && !selectedTeam && teams.length">
+    <!--If the user teams but is looking at creating a new one-->
+    <div class="add-user-explanation">New team name:</div>
+    <div class="ui right action left icon input large fluid">
+        <i class="add users icon"></i>
+        <input type="text" placeholder="Team Name" (keyup.enter)="newTeamClicked()" [(ngModel)]="newTeamNameText">
+        <button class="ui button primary" (click)="newTeamClicked()">Create Team</button>
+    </div>
+</div>
+<div *ngIf="selectedTeam">
+    <div class="ui basic segment">
+        <h4 class="ui header without-vertical-margins add-user-prompt">Team Name</h4>
+        <div class="team-name-wrapper" *ngIf="!editingTeamName">
+            <span class="team-name">{{selectedTeam.model.name}}</span>
+            <button class="ui icon button basic" *ngIf="selectedTeam.canModifyNameAndColor(userInfo)" (click)="editTeamNameClicked(selectedTeam)">
+                <i class="write icon"></i>
+            </button>
+        </div>
+        <div class="ui left icon input large fluid" *ngIf="editingTeamName">
+            <i class="add users icon"></i>
+            <input type="text" placeholder="Team Name" (keyup.enter)="saveEditTeamNameClicked()" [(ngModel)]="editingTeamNameText">
+        </div>
+        <div class="right-flex-wrapper generic-padding" *ngIf="editingTeamName">
+            <button class="ui button primary" (click)="saveEditTeamNameClicked()">Save Team Name</button>
+            <button class="ui button" (click)="cancelEditTeamNameClicked()">Nevermind</button>
+        </div>
+    </div>
+
+    <div class="ui basic segment">
+        <h4 class="ui header without-vertical-margins add-user-prompt">Team Color</h4>
+        <div class="team-color-wrapper" *ngIf="!editingTeamColor">
+            <div class="team-color" [style.background]="selectedTeam.model.color"></div>
+            <button class="ui icon button basic" *ngIf="selectedTeam.canModifyNameAndColor(userInfo)" (click)="editTeamColorClicked(selectedTeam)">
+                <i class="write icon"></i>
+            </button>
+        </div>
+        <div class="ui segment" *ngIf="editingTeamColor">
+            <div class="plate-color-picker-wrapper">
+                <div class="plate-color-picker-item" [style.background]="color" *ngFor="let color of colors" (click)="teamColorSelected(color, selectedTeam)">
+                    <i *ngIf="color == selectedTeam.model.color" class="checkmark icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui basic segment" *ngIf="!selectedTeam.isPlateBusiness">
+        <div class="ui-plate info block center">
+            <span>
+                <i class="info circle icon"></i> All users of your team have full access to your Platters, Plates and Plate Items. Only Admin users can change the team.
+                Want fine-grained permissions? &nbsp; <a [routerLink]="['/settings/business']">Upgrade to Plate Business</a>
+            </span>
+        </div>
+    </div>
+
+    <div class="ui basic segment" semanticAccordion *ngIf="selectedTeam.isPlateBusiness">
+        <h4 class="ui header without-vertical-margins add-user-prompt"><span>Plate for Business</span> - Team Permissions</h4>
+        <div class="add-user-explanation"><div class="ui-plate info block small generic-padding-lg"><i class="info icon"></i> Permissions for Plates and Plate Items default to these. They can be set when creating a Platter.</div></div>
+        <div class="ui styled fluid accordion">
+            <div *ngFor="let permissionSet of permissionSets">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    {{permissionSet.title}}
+                </div>
+                <div class="content">
+                    <div>
+                        <div class="ui-plate ui-plate-list">
+                            <div class="item flex space-between" *ngFor="let permission of permissionSet.permissions">
+                                <div>
+                                    {{permission.title}}
+                                </div>
+                                <div>
+                                    <div class="ui button tiny floating dropdown" semanticDropdown [class.disabled]="!selectedTeam.canModifyTeamPermissions(userInfo)">
+                                        {{ClientPermissionUserTypeStrings[permission.userType]}} <i class="dropdown icon"></i>
+                                        <div class="left menu">
+                                            <div class="item" (click)="changePermissionUserTypeClicked(permission, ClientPermissionUserType.Owner)">Owner</div>
+                                            <div class="item" (click)="changePermissionUserTypeClicked(permission, ClientPermissionUserType.Admin)">Admin</div>
+                                            <div class="item" (click)="changePermissionUserTypeClicked(permission, ClientPermissionUserType.Regular)">Any Team Member</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui basic segment" *ngIf="selectedTeam.canInviteMembers(userInfo)">
+        <h4 class="ui header without-vertical-margins add-user-prompt">New Team Member</h4>
+        <div class="add-user-explanation"><div class="ui-plate info block"><i class="info circle icon"></i> Add a new team member by email.</div></div>
+        <div class="ui right action left icon input large fluid">
+            <i class="add user icon"></i>
+            <input type="text" maxlength="254" placeholder="Email" [focusOn]="addTeamMemberFocus" (keyup.enter)="sendNewUserEmailClicked()" [(ngModel)]="newUserEmailText">
+            <button class="ui button primary" (click)="sendNewUserEmailClicked()">Send Email</button>
+        </div>
+    </div>
+
+    <div class="ui basic segment team-wrapper">
+        <h4 class="ui header add-user-prompt">Team Members</h4>
+
+        <div class="ui basic segment" *ngIf="selectedTeam.model.invitees.length > 0">
+            <i>Pending Invitations: </i>
+            <div class="ui dropdown button pending-invitation" *ngFor="let invitedMember of selectedTeam.model.invitees; let i = index" semanticDropdown>
+                <i class="delete icon"></i>
+                <div class="text">{{ invitedMember.inviteeEmail }}</div>
+                <div class="menu">
+                    <div class="item" (click)="uninviteMemberClicked(invitedMember, i)"><span class="text red bold">Uninvite</span></div>
+                    <div class="divider"></div>
+                    <div class="item" href="#"><span class="text">Nevermind</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="ui segment" *ngIf="selectedTeam.sortedMembers">
+            <div class="ui list relaxed divided">
+                <div class="item" *ngFor="let member of selectedTeam.sortedMembers; let i = index;">
+                    <div class="right floated content" *ngIf="selectedTeam.canInviteMembers(userInfo) && !memberIsOwnerOfTeam(selectedTeam, member) && member.model.id !== userInfo.id">
+                        <!--If the user is admin (can invite members for Plate Business) and this member is not the owner, display a remove button -->
+                        <div class="ui button icon tiny ui dropdown" semanticDropdown>
+                            <i class="remove icon"></i>
+                            <div class="text">Remove</div>
+                            <div class="menu">
+                                <div class="item" (click)="removeMemberFromTeamClicked(member, i)"><span class="text red bold">Remove {{member.model.name}} from team</span></div>
+                                <div class="divider"></div>
+                                <div class="item" href="#"><span class="text">Nevermind</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="right floated content">
+                        <div *ngIf="selectedTeam.canInviteMembers(userInfo) && !memberIsOwnerOfTeam(selectedTeam, member)">
+                            <!--If the user is admin and this member is not the owner, display a changable role dropdown -->
+                            <div class="ui button icon tiny ui dropdown" semanticDropdown>
+                                <i class="user icon"></i> {{member.model.roleForTeam | roleForTeam }} <i class="dropdown icon"></i>
+                                <div class="menu">
+                                    <a class="item" (click)="memberPermissionClicked(member, 'admin')">Admin</a>
+                                    <div class="divider"></div>
+                                    <a class="item" (click)="memberPermissionClicked(member, 'user')">Normal</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div *ngIf="!selectedTeam.canInviteMembers(userInfo) && !memberIsOwnerOfTeam(selectedTeam, member)">
+                            <!-- If the user is not an admin at all and this member is not the owner, just show a label-->
+                            <div class="ui label">
+                                <i class="user icon"></i> {{member.model.roleForTeam | roleForTeam }}
+                            </div>
+                        </div>
+                        <div *ngIf="memberIsOwnerOfTeam(selectedTeam, member)">
+                            <!--If the member is the owner, show the owner label-->
+                            <div class="ui label">
+                                <i class="star icon"></i> Owner
+                            </div>
+                        </div>
+                    </div>
+                    <!--<img class="ui avatar image" src="http://semantic-ui.com/images/avatar/small/helen.jpg">-->
+                    <div class="ui avatar image plate-user-icon-placeholder-wrapper">
+                        <div class="plate-user-icon-placeholder">
+                            {{member.initials}}
+                        </div>
+                    </div>
+                    <div class="content">
+                        <div class="header">{{member.model.name}}</div>
+                        <!--A description-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--<div class="ui basic segment" *ngIf="userIsAdminOfTeam(selectedTeam)">-->
+        <!--<div class="ui basic center aligned segment">-->
+            <!--<button class="ui button danger tiny basic">Delete Team</button>-->
+        <!--</div>-->
+    <!--</div>-->
+</div>
+
+
+<!--Dialog-->
+<!--<div #deleteTeamConfirmDialog class="ui small modal">-->
+    <!--<div class="header">-->
+        <!--Delete Team-->
+    <!--</div>-->
+    <!--<div class="content">-->
+        <!--<p>Delete "{{selectedTeam ? selectedTeam.name : ''}}"?  <b> permanently? Only the owner of the team will have access to Plates assigned to the team.</b></p>-->
+    <!--</div>-->
+    <!--<div class="actions">-->
+        <!--<div class="ui negative button" (click)="deleteTeamClicked(selectedTeam)">-->
+            <!--<i class="remove icon"></i>-->
+            <!--Yes, delete-->
+        <!--</div>-->
+        <!--<div class="ui button" (click)="nevermindDeleteTeamClicked()">-->
+            <!--Nevermind-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->

@@ -1,0 +1,17 @@
+[app-servers]
+load.plate.work
+#prod-01.plate.work
+#prod-02.plate.work
+
+[file-servers]
+# 192.81.217.73
+file-01.plate.work
+
+
+[mongo-servers]
+# mongo-01.plate.work
+67.205.129.225
+
+[all:vars]
+# Sets the environment to staging (staging) or production (prod)
+env=prod

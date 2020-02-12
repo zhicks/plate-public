@@ -1,0 +1,122 @@
+
+    <div class="content-wrapper"> <!-- pusher -->
+        <div class="ui filters-wrapper">
+            <div class="filters-header">FILTER</div>
+            <div class="filter-button-wrapper">
+                <div #dueFilterButton class="ui labeled mini basic icon button filter-button" [ngStyle]="{'border': filterService.currentFilter.due.time ? '1px solid #0066CC': '1px solid transparent'}" [semanticDropdown]="'1'" (click)="dueFilterButtonClicked($event)">
+                    <i class="calendar icon"></i>
+                    <div class="text" style="display: flex; align-items: baseline;">
+                        <span *ngIf="!filterService.currentFilter.due.time">Due Date</span>
+                        <span *ngIf="filterService.currentFilter.due.time">{{filterService.currentFilter.due.option}} {{filterService.currentFilter.due.time | moment:'time'}}</span>
+                        <i class="dropdown icon" style="font-size: 1rem; margin-left: 0.8rem; margin-right: -0.5rem"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="filter-button-wrapper">
+                <div class="ui dropdown labeled mini basic icon button filter-button" [ngStyle]="{'border': filterService.currentFilter.metrics[plateItemsService.priorityString] ? '1px solid #0066CC': '1px solid transparent'}" [semanticDropdown]="'1'">
+                    <i class="fire icon"></i>
+                    <div class="text" style="display: flex; align-items: baseline;">
+                        <span *ngIf="!filterService.currentFilter.metrics[plateItemsService.priorityString]">Priority</span>
+                        <span *ngIf="filterService.currentFilter.metrics[plateItemsService.priorityString]">
+                            <span *ngFor="let filterValue of filterService.getValuesForMetric(plateItemsService.priorityString)">
+                                <div class="ui empty circular label" style="margin-bottom: -0.1rem;" [ngClass]="priorityColorClasses[filterValue]"></div>
+                                {{filterValue}} &nbsp;
+                            </span>
+                        </span>
+                        <i class="dropdown icon" style="font-size: 1rem; margin-left: 0.8rem;"></i>
+                    </div>
+                    <div class="menu">
+                        <div class="item" *ngFor="let metricValue of plateItemsService.DEFAULT_METRIC_VALUES" (click)="filterPriorityClicked(metricValue)">
+                            <i class="selection-indicator priority check icon" [ngStyle]="{opacity: filterService.metricValueIsSelected(plateItemsService.priorityString, metricValue) ? 1 : 0}"></i>
+                            <div class="ui empty circular label" [ngClass]="priorityColorClasses[metricValue]"></div>
+                            P{{metricValue}}
+                        </div>
+                        <div class="item">
+                            <div class="ui white empty circular label"></div>
+                            None
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="filter-button-wrapper">
+                <div class="ui dropdown labeled mini basic icon button filter-button" [ngStyle]="{'border': filterService.currentFilter.metrics[plateItemsService.impactString] ? '1px solid #0066CC': '1px solid transparent'}" [semanticDropdown]="'1'">
+                    <i class="lightning icon"></i>
+                    <div class="text" style="display: flex; align-items: baseline;">
+                        <span *ngIf="!filterService.currentFilter.metrics[plateItemsService.impactString]">Impact</span>
+                        <span *ngIf="filterService.currentFilter.metrics[plateItemsService.impactString]">
+                            <span *ngFor="let filterValue of filterService.getValuesForMetric(plateItemsService.impactString)">
+                                {{filterValue}} &nbsp;
+                            </span>
+                        </span>
+                        <i class="dropdown icon" style="font-size: 1rem; margin-left: 0.8rem;"></i>
+                    </div>
+                    <div class="menu">
+                        <div class="item" *ngFor="let metricValue of plateItemsService.DEFAULT_METRIC_VALUES" (click)="filterImpactClicked(metricValue)">
+                            <i class="selection-indicator check icon" [ngStyle]="{opacity: filterService.metricValueIsSelected(plateItemsService.impactString, metricValue) ? 1 : 0}"></i>
+                            {{metricValue}}
+                        </div>
+                        <div class="item" (click)="assignImpactClicked(null)">
+                            None
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="filter-button-wrapper">
+                <div class="ui dropdown labeled mini basic icon button filter-button" [ngStyle]="{'border': filterService.currentFilter.metrics[plateItemsService.effortString] ? '1px solid #0066CC': '1px solid transparent'}" [semanticDropdown]="'1'">
+                    <i class="cubes icon"></i>
+                    <div class="text" style="display: flex; align-items: baseline;">
+                        <span *ngIf="!filterService.currentFilter.metrics[plateItemsService.effortString]">Effort</span>
+                        <span *ngIf="filterService.currentFilter.metrics[plateItemsService.effortString]">
+                            <span *ngFor="let filterValue of filterService.getValuesForMetric(plateItemsService.effortString)">
+                                {{filterValue}} &nbsp;
+                            </span>
+                        </span>
+                        <i class="dropdown icon" style="font-size: 1rem; margin-left: 0.8rem;"></i>
+                    </div>
+                    <div class="menu">
+                        <div class="item" *ngFor="let metricValue of plateItemsService.DEFAULT_METRIC_VALUES" (click)="filterEffortClicked(metricValue)">
+                            <i class="selection-indicator check icon" [ngStyle]="{opacity: filterService.metricValueIsSelected(plateItemsService.effortString, metricValue) ? 1 : 0}"></i>
+                            {{metricValue}}
+                        </div>
+                        <div class="item" (click)="assignImpactClicked(null)">
+                            None
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div plates-wrapper class="ui plates-wrapper" p-sch plateHorizontalScroll [dragula]="'plates-drag'">
+            <div plate-no-drag="1" class="flex" *ngIf="addingPlate">
+                <!--NEW-->
+                <div class="flex" >
+                    <plate-plate class="flex" [base]="addingPlate" p-sch></plate-plate>
+                </div>
+            </div>
+            <div plate-no-drag="1" class="flex" *ngIf="!addingPlate && !selectedBasePlates.length">
+                <!--NONE-->
+                <div class="flex" >
+                    <div style="font-style:italic;color:#999;margin:2rem;max-width:35vw">Looks like you don't have any Plates open. Click one from the sidebar on the left, or create a new one!</div>
+                </div>
+            </div>
+            <div base-plate-master-wrapper home-scroll="home-scroll" [attr.docked]="basePlate.docked ? 'true' : null" [ngClass]="{docked: basePlate.docked, minimized: basePlate.minimized}" [style.right]="basePlate.cssRight" [attr.id]="basePlate.model.id" [attr.pos]="plateIndex" [attr.plateType]="basePlate.model.type" class="base-plate-master-wrapper" *ngFor="let basePlate of selectedBasePlates; let plateIndex = index;">
+                <!-- NATIVE -->
+                <div class="flex" *ngIf="(basePlate.model.type == undefined || basePlate.model.type == null) && !basePlate.model.isDynamic">
+                    <plate-plate class="flex" [base]="basePlate" p-sch></plate-plate>
+                </div>
+                <!-- GMAIL -->
+                <div class="flex" *ngIf="basePlate.model.type === 1">
+                    <gmail-plate class="flex" [base]="basePlate" p-sch></gmail-plate>
+                </div>
+                <!-- SLACK -->
+                <div class="flex" *ngIf="basePlate.model.type === 2">
+                    <slack-plate class="flex" [base]="basePlate" p-sch></slack-plate>
+                </div>
+                <!-- DYNAMIC -->
+                <div class="flex" *ngIf="basePlate.model.isDynamic">
+                    <dynamic-plate class="flex" [base]="basePlate" p-sch></dynamic-plate>
+                </div>
+            </div>
+            <div class="space"></div>
+        </div>
+    </div>
+<router-outlet></router-outlet>

@@ -1,0 +1,82 @@
+<div *ngIf="profile">
+    <h2 class="ui center aligned icon header">
+        <i class="circular user icon"></i>
+        Profile
+    </h2>
+
+    <div class="ui basic segment">
+        <h3 class="ui header without-vertical-margins add-user-prompt">Name</h3>
+        <div class="team-name-wrapper" *ngIf="!editingName">
+            <span class="team-name">{{profile.name}}</span>
+            <button class="ui icon button basic" (click)="editNameClicked()">
+                <i class="write icon"></i>
+            </button>
+        </div>
+        <div class="ui left icon input large fluid" *ngIf="editingName">
+            <i class="user icon"></i>
+            <input type="text" placeholder="Name" maxlength="70" (keyup.enter)="saveEditNameClicked()" [(ngModel)]="editingNameText" maxlength="100">
+        </div>
+        <div class="right-flex-wrapper generic-padding" *ngIf="editingName">
+            <button class="ui button primary" (click)="saveEditNameClicked()">OK</button>
+            <button class="ui button" (click)="cancelEditNameClicked()">Nevermind</button>
+        </div>
+    </div>
+
+    <div class="ui basic segment" style="color: #444;">
+        <div class="ui red message" *ngIf="addingExtraEmailErrorStatus">
+            {{addingExtraEmailErrorStatus}}
+        </div>
+        <h3 class="ui header without-vertical-margins add-user-prompt">Emails</h3>
+        <div class="team-name-wrapper" *ngIf="profile.email">
+            <i class="mail icon"></i> <span class="team-name">{{profile.email}}</span>
+            <button *ngIf="extraEmails.length" class="ui dropdown button basic icon tiny" semanticDropdown>
+                <i class="trash icon"></i>
+                <div class="menu">
+                    <div class="item" (click)="deleteExtraEmailClicked(profile.email)">
+                        <span class="red text">Delete this email</span>
+                    </div>
+                    <div class="item">
+                        Nevermind
+                    </div>
+                </div>
+            </button>
+        </div>
+        <div class="team-name-wrapper" *ngFor="let extraEmail of extraEmails">
+            <i class="mail icon"></i> <span class="team-name">{{extraEmail.email}}</span>
+            <button *ngIf="profile.email || extraEmails.length > 1" class="ui dropdown button basic icon tiny" semanticDropdown>
+                <i class="trash icon"></i>
+                <div class="menu">
+                    <div class="item" (click)="deleteExtraEmailClicked(extraEmail.email)">
+                        <span class="red text">Delete this email</span>
+                    </div>
+                    <div class="item">
+                        Nevermind
+                    </div>
+                </div>
+            </button>
+        </div>
+        <button *ngIf="!addingExtraEmail" class="ui button" [ngClass]="(profile.email && extraEmails.length > 1) || (!profile.email && extraEmails.length > 2) ? 'disabled' : ''" (click)="addEmailClicked()">Add another email</button>
+        <div class="generic-padding" *ngIf="addingExtraEmail">
+            <div class="ui left icon input large fluid">
+                <i class="mail icon"></i>
+                <input type="text" placeholder="Email" [focusOn]="'full'" (keyup.enter)="saveExtraEmailEnterPressed($event)" [(ngModel)]="addingExtraEmailContent" maxlength="100">
+            </div>
+            <div class="generic-padding-top">
+                <button class="ui button primary" (click)="saveExtraEmailClicked()">Save Email</button>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+

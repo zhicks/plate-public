@@ -1,0 +1,324 @@
+<div class="ui visible inverted left vertical sidebar menu plate-side-bar" plateSideBar plate-side-bar>
+
+    <div class="top-wrapper">
+        <a [routerLink]="['/']" class="app-title">
+            <!--<img class="OLD-logo" src="/shared/assets/images/logo_plate_60px.png">-->
+            <div class="master-logo svg-white" [zIcon]="{ icon: connectedAppsService.getConnectedAppIcon(ClientConnectedAppType.Native), type: 'svg' }"></div>
+            <span class="app-title-span">
+                Plate
+            </span>
+        </a>
+        <div close-sidebar-button class="close-sidebar-button-wrapper">
+            <i class="close icon"></i>
+        </div>
+    </div>
+
+    <div [ngClass]="{inactive: plateSideBarService.inactive}">
+        <div class="sidebar-team-wrapper" *ngFor="let team of getTeamsAndPersonal()">
+            <div class="team-heading" (click)="teamHeadingClicked($event, team)">
+                <div *ngIf="team.isUser" class="sidebar-list-action-button" [semanticPopup]="'Only you can see these Plates'">
+                    <i class="user icon" style="font-size: 0.9em;"></i>
+                </div>
+                <div *ngIf="!team.isUser" class="sidebar-list-action-button" [semanticPopup]="'Team'" [bind]="team.model.name">
+                    <i class="users icon" style="font-size: 0.9em;"></i>
+                </div>
+                <span>{{team.model.name}}</span>
+            </div>
+            <div class="sidebar-groups-wrapper" [hidden]="!team.expanded">
+                <div class="sidebar-group-wrapper" *ngFor="let platter of plattersByTeam[team.model.id];">
+                    <div class="sidebar-list-title-wrapper" [ngStyle]="{'border-bottom': platter.model.expanded ? '' : 0}">
+                        <div class="sidebar-list-title-text">
+                            <div [ngClass]="{ expanded: platter.model.expanded }" class="tree-expander-wrapper" (click)="expandPlatterClicked(platter)">
+                                <i class="dropdown icon"></i>
+                            </div>
+                            <span class="text" (click)="platterNameClicked(platter)">{{platter.model.name}}</span>
+                            <div class="activity-indicator inline" [hidden]="!platterHasUnackedActivities(platter)" [style.background]="platter.model.color"></div>
+                        </div>
+                        <span class="sidebar-list-title-icons">
+                            <div class="sidebar-list-action-button" (click)="platterSettingsClicked(platter)" [semanticPopup]="'Platter Settings'">
+                                <i class="setting icon"></i>
+                            </div>
+                            <div class="sidebar-list-action-button" [hidden]="!platter.canAddPlates(user)" (click)="addPlateClicked(platter)" [semanticPopup]="'<i class=\'plus icon\'></i> Add a new Plate to this Platter'" [useHtml]="true">
+                                <i class="circle plus icon"></i>
+                            </div>
+                        </span>
+                    </div>
+                    <div bag-name="plate-sidebar-plates-drag" [attr.platterId]="platter.model.id" [dragula]="'plate-sidebar-plates-drag'" [attr.canDrag]="platter.canModifyPlates(user)" [attr.canDragOut]="platter.canArchivePlates(user)" [attr.canDragInto]="platter.canAddPlates(user)" style="min-height: 0.5rem">
+                        <div class="sidebar-item-wrapper" list-plate="1" [attr.listPlateId]="plate.model.id" [attr.pPos]="plate.model.listPos" [hidden]="!platter.model.expanded" [ngClass]="{'selected': plateIsSelected(plate)}" *ngFor="let plate of platter.plates; let i = index;" (click)="plateClicked(plate)">
+                            <div class="sidebar-item-title-icon-wrapper">
+                                <span class="sidebar-item-icon-wrapper">
+                                    <div class="sidebar-item-icon plate" [ngClass]="!plate.selected ? 'bg-' + plate.model.color.substring(1) : 'selected bg-' + plate.model.color.substring(1)"></div>
+                                </span>
+                                <span class="sidebar-item-title">{{plate.model.name}}</span> <span *ngIf="PLATEDEBUG.showPos" style="padding-left: 1rem">{{plate.model.listPos}}</span>
+                                <div class="activity-indicator inline" [hidden]="!plateHasUnackedActivities(plate)" [style.background]="plate.model.color"></div>
+                            </div>
+                            <span class="sidebar-item-right-icon" [hidden]="!plateIsSelected(plate)"><i class="checkmark icon"></i></span>
+                        </div>
+                    </div>
+                    <div plate-sidebar-no-drag="1" class="sidebar-item-add-button-wrapper" [hidden]="!platter.model.expanded || platter.plates.length || !platter.canAddPlates(user)" (click)="addPlateClicked(platter)">
+                        <div class="sidebar-item-title-icon-wrapper">
+                            <span class="sidebar-item-title"><i class="plus icon"></i>Add a Plate</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="new-platter-button-wrapper">
+                    <div class="new-platter-button" *ngIf="team.canAddPlatter(user)" (click)="newPlatterClicked(team)" [semanticPopup]="'Add a group of Plates'">
+                        <i class="plus icon"></i> New Platter
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-team-wrapper">
+            <div class="team-heading" (click)="connectedAppsHeadingClicked($event)">
+                <div class="sidebar-list-action-button" [semanticPopup]="'Your connected apps such as Gmail, Slack, etc'">
+                    <i class="linkify icon" style="font-size: 0.9em;"></i>
+                </div>
+                <span>Connected Apps</span>
+            </div>
+            <div class="sidebar-groups-wrapper" [hidden]="!connectedAppsExpanded">
+                <div class="sidebar-group-wrapper">
+                    <div class="sidebar-item-wrapper" [ngClass]="{'selected': connectedApp.selected}" *ngFor="let connectedApp of connectedApps" (click)="connectedAppClicked(connectedApp)">
+                        <div class="sidebar-item-title-icon-wrapper">
+                            <span class="sidebar-item-icon-wrapper" style="margin-right: 0.3rem;">
+                                <img class="sidebar-item-icon" [src]="connectedAppsService.getConnectedAppIcon(connectedApp.model.type, null, true)">
+                            </span>
+                            <span class="sidebar-item-title">{{connectedApp.model.name}}</span>
+                        </div>
+                        <span class="sidebar-item-right-icon" [hidden]="!connectedApp.selected"><i class="checkmark icon"></i></span>
+                    </div>
+                    <div class="sidebar-new-connected-app-prompt-wrapper">
+                        <div class="new-connected-app" (click)="addGmailClicked()">
+                            <i class="plus icon"></i>
+                            <img class="sidebar-item-icon" [src]="connectedAppsService.getConnectedAppIcon(ClientConnectedAppType.Gmail)">
+                            <span>Add a Gmail Account</span>
+                        </div>
+                        <div class="new-connected-app" (click)="addSlackClicked()">
+                            <i class="plus icon"></i>
+                            <img class="sidebar-item-icon" [src]="connectedAppsService.getConnectedAppIcon(ClientConnectedAppType.Slack, null, true)">
+                            <span>Add a Slack Account</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div #connectedAppDialog class="ui basic small modal new-connected-app-dialog">
+    <div class="header">
+        New Connected App
+    </div>
+    <div class="content">
+        <div class="ui segment connected-app-dialog-item-wrapper" (click)="addGmailInDialogClicked()">
+            <div class="item connected-app-dialog-item-content-wrapper">
+                <div class="ui image">
+                    <img class="sidebar-item-icon" [src]="connectedAppsService.getConnectedAppIcon(ClientConnectedAppType.Gmail, 'large')">
+                </div>
+                <div class="item-content">
+                    <div class="header">
+                        Gmail
+                    </div>
+                    <div class="description">
+                        Connect a Gmail account to quickly create Plate items from email.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ui segment connected-app-dialog-item-wrapper" (click)="addSlackInDialogClicked()">
+            <div class="item connected-app-dialog-item-content-wrapper">
+                <div class="ui image">
+                    <img class="sidebar-item-icon" [src]="connectedAppsService.getConnectedAppIcon(ClientConnectedAppType.Slack, 'large')">
+                </div>
+                <div class="item-content">
+                    <div class="header">
+                        Slack
+                    </div>
+                    <div class="description">
+                        Connect a Slack account to see / send messages and quickly create items.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="actions">
+        <div class="ui basic inverted button" (click)="nevermindConnectedAppDialogClicked()">
+            Nevermind
+        </div>
+    </div>
+</div>
+
+
+<div #platterSettingsDialog class="ui small modal platter-settings-dialog">
+    <div class="header flex" *ngIf="editingPlatter">
+        <div class="svg-1B1C1D" style="width: 2.3rem; margin-top: -.25rem; margin-bottom: -2rem; margin-right: 0.5rem;" [zIcon]="{ icon: connectedAppsService.getConnectedAppIcon(ClientConnectedAppType.Native), type: 'svg' }"></div>
+        {{editingPlatter && editingPlatter.model.id ? 'Platter Settings' : 'New Platter'}}
+    </div>
+    <div style="
+    text-align: center;
+    color: #666;
+    padding-top: 0.5rem;
+    "><i class="info circle icon"></i>A Platter is a group of Plates belonging to you or a team.</div>
+    <div class="content" *ngIf="editingPlatter">
+        <div style="text-align: center; color: rgba(0,0,0,0.7); font-size: 1.1rem">
+            <i class="icon" [ngClass]="editingPlatter.editTeam ? 'users' : 'user'"></i> {{editingPlatter.editTeam?.model.name || 'Private'}}
+        </div>
+        <h3 class="ui header without-vertical-margins">Platter Name</h3>
+        <div class="ui input large fluid">
+            <input type="text" placeholder="Platter name" [(ngModel)]="editingPlatter.editName" maxlength="50" (keyup.enter)="editNamePlatterDialogEnterPressed($event)" [readonly]="editingPlatter.editTeam && !editingPlatter.editTeam.canModifyPlatter(user)">
+        </div>
+
+        <!--<div class="ui-plate info block generic-padding" style="text-align: center;" *ngIf="editingPlatter?.editTeam && !editingPlatter.editTeam.isPlateBusiness">-->
+            <!--<span>All members of the team will have full access to Plates and Plate Items within. Want to assign specific permissions? <a [routerLink]="['business']">Upgrade this team to Plate for Business</a></span>-->
+        <!--</div>-->
+
+        <div class="ui segment" *ngIf="editingPlatter.editTeam && editingPlatter.editTeam.isPlateBusiness && (editingPlatter.editTeam.canModifyPlatter(user) ? true : editingPlatter.editIsInviteOnly)">
+            <div class="platter-settings-team-visibility-setting" style="border-bottom: 1px solid #CCC;" (click)="teamVisiblePlatterSettingClicked()" *ngIf="editingPlatter.editTeam.canModifyPlatter(user)">
+                <div class="checkmark-wrapper">
+                    <i class="checkmark blue icon" [style.opacity]="!editingPlatter.editIsInviteOnly ? 1 : 0"></i>
+                </div>
+                <div>
+                    <div style="font-weight: bold">Team Visible Platter</div>
+                    <div class="ui-plate info block small"><i class="info circle icon"></i> All Team Members can see this Platter's contents</div>
+                </div>
+            </div>
+            <div class="platter-settings-team-visibility-setting" (click)="inviteOnlyPlatterSettingClicked()" *ngIf="editingPlatter.editTeam.canModifyPlatter(user)">
+                <div class="checkmark-wrapper">
+                    <i class="checkmark blue icon" [style.opacity]="editingPlatter.editIsInviteOnly ? 1 : 0"></i>
+                </div>
+                <div>
+                    <div style="font-weight: bold">Invite Only Platter</div>
+                    <div class="ui-plate info block small"><i class="info circle icon"></i> Only certain members can see this Platter's contents.</div>
+                </div>
+            </div>
+
+            <div *ngIf="editingPlatter.editIsInviteOnly">
+                <div>
+                    <div><b>Platter Members</b></div>
+                    <div class="ui-plate ui-plate-list not-divided scrolling no-min-height generic-padding">
+                        <div class="item" *ngFor="let member of getMembersForEditingPlatter()" (click)="editingInviteOnlyPlatterMemberClicked(member)" (mouseover)="member.hoveringOver = true" (mouseout)="member.hoveringOver = false">
+                            <div class="left">
+                                <i class="selection-indicator no-margin delete icon" [hidden]="!editingPlatter.editTeam.canModifyPlatter(user) || !member.hoveringOver || member.model.id === editingPlatter.model.owner"></i>
+                                <div class="plate-user-icon-placeholder-wrapper" [hidden]="editingPlatter.editTeam.canModifyPlatter(user) && member.hoveringOver && member.model.id !== editingPlatter.model.owner">
+                                    <div class="plate-user-icon-placeholder small">
+                                        {{member.initials}}
+                                    </div>
+                                </div>
+                            </div>
+                            {{member.model.name}} <span style="color: #666; font-size:0.8rem; padding-left: 0.8rem" *ngIf="member.model.id === editingPlatter.model.owner">Platter Owner</span>
+                        </div>
+                    </div>
+                    <div class="ui segment ui-plate search-menu" *ngIf="editingPlatter.editTeam.canModifyPlatter(user)">
+                        <div style="font-size: 0.8rem">Select Members:</div>
+                        <div class="ui left search icon input">
+                            <i class="search icon"></i>
+                            <input type="text" name="search" placeholder="Filter" tabindex="0" [(ngModel)]="currentTeamMemberFilter">
+                        </div>
+                        <div class="ui-plate ui-plate-list not-divided scrolling no-min-height">
+                            <div class="item" *ngFor="let member of getPotentialMembersForEditingPlatter()" [hidden]="teamMemberIsFilteredOut(member)" (click)="member.selected = !member.selected">
+                                <div class="left">
+                                    <i class="selection-indicator no-margin check icon" [hidden]="!member.selected"></i>
+                                    <div class="plate-user-icon-placeholder-wrapper" [hidden]="member.selected">
+                                        <div class="plate-user-icon-placeholder small">
+                                            {{member.initials}}
+                                        </div>
+                                    </div>
+                                </div>
+                                {{member.model.name}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="editingPlatter.editTeam?.isPlateBusiness">
+            <div class="ui-plate text-button blue link generic-padding-top small" (click)="platterShowAdvancedPermissions = !platterShowAdvancedPermissions">{{platterShowAdvancedPermissions ? 'Hide' : 'Show'}} Advanced Permissions</div>
+            <div *ngIf="platterShowAdvancedPermissions">
+                <div class="ui styled fluid accordion" semanticAccordion>
+                    <div *ngFor="let permissionSet of platterPermissionSets">
+                        <div class="title active">
+                            <i class="dropdown icon"></i>
+                            {{permissionSet.title}}
+                        </div>
+                        <div class="content active">
+                            <div>
+                                <div class="ui-plate ui-plate-list">
+                                    <div class="item flex space-between" *ngFor="let permission of permissionSet.permissions">
+                                        <div>
+                                            {{permission.title}}
+                                        </div>
+                                        <div style="flex-shrink: 0">
+                                            <span style="font-size: 0.8rem; font-weight: bold; color: #777;">{{permission.isOverride ? '' : 'Team Default'}}</span>
+                                            <div class="ui button tiny floating dropdown" semanticDropdown [class.disabled]="!editingPlatter.editTeam.canModifyTeamPermissions(user)">
+                                                {{ClientPermissionUserTypeStrings[permission.userType]}} <i class="dropdown icon"></i>
+                                                <div class="left menu">
+                                                    <div class="item" (click)="changePermissionUserTypeClicked(permission, ClientPermissionUserType.Owner)">Owner</div>
+                                                    <div class="item" (click)="changePermissionUserTypeClicked(permission, ClientPermissionUserType.Admin)">Admin</div>
+                                                    <div class="item" (click)="changePermissionUserTypeClicked(permission, ClientPermissionUserType.Regular)">Any Team Member</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="actions" style="display: flex; justify-content: space-between">
+        <div class="left">
+            <span class="ui-plate text-button small danger" (click)="deletePlatterClicked()" *ngIf="editingPlatter?.editTeam ? editingPlatter.editTeam.canArchivePlatter(user) : true">Delete Platter</span>
+        </div>
+        <div class="right">
+            <button class="ui labeled icon primary button" (click)="savePlatterDialogClicked()" *ngIf="editingPlatter?.editTeam ? editingPlatter.editTeam.canModifyPlatter(user) : true">
+                <i class="check icon"></i>
+                Save Platter
+            </button>
+            <div class="ui button" (click)="nevermindPlatterDialogClicked()">
+                Nevermind
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Dialog-->
+<div #deletePlatterConfirmDialog class="ui small modal">
+    <div class="header">
+        Delete Platter
+    </div>
+    <div class="content">
+        <p>Delete "{{editingPlatter ? editingPlatter.model.name : ''}}" permanently? <b>All Plates under this Platter will be archived.</b></p>
+    </div>
+    <div class="actions">
+        <div class="ui negative button" (click)="deletePlatterConfirmClicked()">
+            <i class="remove icon"></i>
+            Yes, delete
+        </div>
+        <div class="ui button" (click)="nevermindDeletePlatterConfirmClicked()">
+            Nevermind
+        </div>
+    </div>
+</div>
+
+<!--Dialog-->
+<div #movePlateToNewTeamConfirmDialog class="ui small modal">
+    <div class="header">
+        Move Plate to Different Team
+    </div>
+    <div class="content">
+        {{movePlateToNewTeamConfirmMessage}}
+    </div>
+    <div class="actions">
+        <div class="ui primary button" (click)="movePlateToNewTeamConfirmClicked()">
+            <i class="checkmark icon"></i>
+            OK
+        </div>
+        <div class="ui button" (click)="nevermindMovePlateToNewTeamConfirmClicked()">
+            Nevermind
+        </div>
+    </div>
+</div>

@@ -1,0 +1,24 @@
+---
+## Default vars and config
+
+repo_url: git@github.com:zhicks/plate.git
+repo_version: master
+app_name: plate
+user_name: "{{ app_name }}"
+server_name: plate.work
+deploy_dir: "/home/{{ user_name }}/{{ app_name }}"
+deploy_app_dir: "/home/{{ user_name }}/{{ app_name }}/{{ app_name }}-app" 
+deploy_app_executable: "server/src/server.js"
+deploy_log_dir: "{{ deploy_dir }}/logs"
+db_backup_dir: "{{ deploy_dir }}/db-backups"
+ssh_port: 1204
+ssh_config_file: "/etc/ssh/sshd_config"
+nodejs_app_port: 9000
+
+webserver_packages_list: 
+  - apache2
+  - git
+  - nodejs
+  - npm
+  - imagemagick
+  

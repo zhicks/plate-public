@@ -1,0 +1,326 @@
+<div #modal class="ui modal plate-item-edit-modal" ng2FileDrop (fileOver)="fileOverBase($event)" [uploader]="uploader">
+    <div class="dropzone-prompt" [style.opacity]="hasBaseDropZoneOver ? 0.7 : 0" [hidden]="!hasBaseDropZoneOver">
+        <span class="flex baseline"><i class="plus icon"></i> Drop to attach!</span>
+    </div>
+    <div class="plate-item-edit-modal-header" [style.backgroundColor]="editingPlateItemService.plateColor">
+        <div class="text">
+            {{editingPlateItemService.title}}
+        </div>
+        <div class="close-button" (click)="closeDialogClicked()">
+            <i class="close icon"></i>
+        </div>
+    </div>
+    <div class="content dialog-content" *ngIf="editingItem && initStatus.didInit">
+        <div class="left-dialog-content">
+            <div class="row item-title-area-wrapper">
+                <div class="section-label">Title</div>
+                <textarea #inputTextArea input-text-area class="plate-textarea dialog-item-title" [ngClass]="editingTitle ? '' : 'not-editing'" textAreaAutoGrow (heightListener)="onTextAreaHeightChanged($event)" placeholder="Item title" type="text" [(ngModel)]="editTitle" (keydown.enter)="titleEnterPressed($event)" (click)="titleClicked()" (blur)="titleBlurred()" [readonly]="isReadOnly"></textarea>
+                <div class="buttons-wrapper" [ngClass]="{inactive: !editingTitle}" [hidden]="isReadOnly">
+                    <button class="ui mini primary button" (click)="saveTitleEditClicked()">
+                        ↵ Save
+                    </button>
+                    <!--<button class="ui labeled mini icon button" (click)="nevermindEditTitleClicked()" [ngClass]="{inactive: !commentAreaFocused}">-->
+                        <!--Nevermind-->
+                    <!--</button>-->
+                </div>
+            </div>
+            <div class="row">
+                <div class="ui inverted dimmer" [ngClass]="uploadingFileAttachmentsPct !== null ? 'active' : ''">
+                    <div class="ui small text loader">UPLOADING {{uploadingFileAttachmentsPct}}%</div>
+                </div>
+                <div class="generic-padding-bottom" [hidden]="!editingItem.model.fileAttachments.length"><b>File Attachments</b></div>
+                <div class="plate-item-file-attachment-wrapper" *ngFor="let attachment of editingItem.model.fileAttachments">
+                    <div class="preview" title="Click to preview" (click)="attachmentClicked(attachment)" [ngStyle]="{'background-image': attachment.thumbnailUrlProperty}">
+                        <span [hidden]="attachment.thumbnailUrlProperty">{{attachment.fileExtension}}</span>
+                    </div>
+                    <div>
+                        <div class="ui-plate text-button bold black link" style="font-size: 1.1rem" (click)="attachmentClicked(attachment)">
+                            {{attachment.fileName}}
+                        </div>
+                        <div class="ui-plate subtle-detail">
+                            {{attachment.created | moment:'time'}}
+                        </div>
+                        <div class="flex">
+                            <div class="ui-plate text-button danger ui dropdown" semanticDropdown style="margin-right: 1rem;">
+                                <i class="trash icon"></i> Delete
+                                <div class="menu">
+                                    <div class="item" (click)="deleteAttachmentClicked(attachment)"><span class="text red bold">Delete this attachment permanently?</span></div>
+                                    <div class="item">Nevermind</div>
+                                </div>
+                            </div>
+                            <div class="ui-plate text-button" (click)="downloadFileAttachmentClicked(attachment)"><i class="download icon"></i> Download</div>
+                        </div>
+                    </div>
+                </div>
+                <div [hidden]="isReadOnly">
+                    <span class="ui-plate text-button flexless bold" (click)="attachFileClicked()">
+                        <i class="linkify icon"></i> Attach a file
+                    </span>
+                    <input plate-item-upload-input ng2FileSelect [uploader]="uploader" type="file" name="uploads[]" multiple="multiple" style="display: none">
+                </div>
+                <iframe plate-item-dl-iframe style="display:none;"></iframe>
+            </div>
+            <div class="row" style="padding-top: 1.2rem;" *ngIf="editingItem.model.connectedAppAttachments && editingItem.model.connectedAppAttachments.length">
+                <div><b>Connected App Attachments</b></div>
+                <div class="ui relaxed divided list attachments-list">
+                    <div class="item connected-app-item" *ngFor="let appAttachment of editingItem.model.connectedAppAttachments">
+                        <div class="item-unexpanded" (click)="connectedAppItemClicked($event, appAttachment)">
+                            <div class="attachments-list-item-left">
+                                <div class="app-name">{{connectedAppsService.getAppNameForType(appAttachment.app)}}</div>
+                                <div class="attachments-list-item-img-wrapper">
+                                    <div class="ui image" [zIcon]="{ icon: connectedAppsService.getConnectedAppIcon(appAttachment.app), type: 'png' }"></div>
+                                </div>
+                                <div class="main-detail-wrapper">
+                                    <div class="header">{{appAttachment.title}}</div>
+                                    {{appAttachment.subtitle}}
+                                </div>
+                            </div>
+                            <div class="attachments-list-item-right">
+                                <div class="detail-wrapper" *ngIf="appAttachment.customDetails">
+                                    <span class="detail-item-wrapper" *ngFor="let detail of appAttachment.customDetails; let detailIndex = index;">{{getDetailStringForAppAttachment(detail, appAttachment, detailIndex)}}</span>
+                                </div>
+                            </div>
+                            <div class="attachments-list-item-far-right">
+                                View in {{connectedAppsService.getAppNameForType(appAttachment.app)}}
+                            </div>
+                        </div>
+                        <div item-content class="item-content" *ngIf="appAttachment.expanded && appAttachment.content">
+                            <button class="ui labeled icon button" (click)="removeAttachmentClicked(appAttachment)" *ngIf="appAttachment.id">
+                                <i class="remove icon"></i>
+                                Remove Attachment
+                            </button>
+                            <h4>Text Content:</h4>
+                            <pre class="text-content">{{appAttachment.content}}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row pad-row-top">
+                <div class="column">
+                    <div [hidden]="isReadOnly"><b>Add Comment</b></div>
+                    <div class="comments-wrapper">
+
+                        <div class="new-comments-wrapper" [hidden]="isReadOnly">
+                            <textarea #commentTextArea class="plate-textarea" textAreaAutoGrow (heightListener)="onTextAreaHeightChanged($event)" placeholder="New comment" type="text" [(ngModel)]="addingComment?.model.content" (focus)="newCommentAreaFocused()" (blur)="newCommentAreaBlurred()"></textarea>
+                            <div class="buttons-wrapper flex right">
+                                <button class="ui labeled mini icon primary button save-comment-button" (click)="addCommentSaveClicked()" [ngClass]="{inactive: !commentAreaFocused}">
+                                    <i class="edit icon"></i>
+                                    Save Comment
+                                </button>
+                            </div>
+                        </div>
+
+                        <div [hidden]="!activitiesAndComments.length"><b>Activity</b></div>
+                        <div class="ui basic segment comments-list-wrapper" [hidden]="!activitiesAndComments.length">
+                            <div class="ui comments">
+                                <div class="ui" [ngClass]="activityOrComment.isActivity ? 'activity' : 'comment'" *ngFor="let activityOrComment of activitiesAndComments | orderBy:['-model.created']">
+                                    <!--Comment-->
+                                    <a class="avatar" *ngIf="!activityOrComment.isActivity">
+                                        <!--<img src="http://semantic-ui.com/images/avatar/small/helen.jpg">-->
+                                        <div class="plate-user-icon-placeholder-wrapper">
+                                            <div class="plate-user-icon-placeholder">
+                                                {{usersService.getInitials(activityOrComment.model.ownerName)}}
+                                            </div>
+                                        </div>
+                                    </a>
+                                    <div class="content" *ngIf="!activityOrComment.originatorName">
+                                        <a class="author">{{activityOrComment.model.ownerName}}</a>
+                                        <div class="metadata">
+                                            <span class="date">{{activityOrComment.model.created | moment:'time'}}</span>
+                                        </div>
+                                        <div class="text">
+                                            <pre *ngIf="!activityOrComment.editing" style="white-space: pre-line; font-family: inherit">{{activityOrComment.model.content}}</pre>
+                                            <div class="edit-comment-block" *ngIf="activityOrComment.editing">
+                                                <textarea class="plate-textarea" textAreaAutoGrow placeholder="Edit comment" type="text" [(ngModel)]="editingComment.model.content" [focusOn]="'full'"></textarea>
+                                                <button class="ui labeled icon small primary button" (click)="editCommentSaveClicked(activityOrComment)">
+                                                    <i class="edit icon"></i>
+                                                    Save
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="actions" *ngIf="userOwnsComment(activityOrComment) && !activityOrComment.editing">
+                                            <a class="reply" (click)="editCommentClicked(activityOrComment)"><i class="edit icon"></i> Edit</a>
+                                            <a class="delete ui dropdown" semanticDropdown>
+                                                <i class="delete icon"></i> Delete
+                                                <div class="menu">
+                                                    <div class="item" (click)="deleteCommentConfirmClicked(activityOrComment)"><span class="text red bold">Delete this comment permanently?</span></div>
+                                                    <div class="item">Nevermind</div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <!--Activity-->
+                                    <div class="content activity" *ngIf="activityOrComment.isActivity">
+                                        <span>{{activityOrComment.model.created | moment:'time'}} - <b>{{activityOrComment.originatorName}}</b> {{activityOrComment.activityString}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="right-dialog-content">
+            <div item-edit-assignee-wrapper class="dialog-sidebar-item-wrapper">
+                <div class="dialog-sidebar-title-wrapper">
+                    <div class="title"><i class="users icon"></i><b> Assignees</b></div>
+                </div>
+                <div class="dialog-sidebar-item-content flex column assignees">
+                    <div menu-button-wrapper class="menu-button-wrapper" bodyDropdown (click)="assigneesClicked($event)">
+                        <div class="assignee" [hidden]="assignees.length"><span class="subtle-detail"><i class="user plus icon"></i> Assign Team Members</span></div>
+                        <div class="assignee flex baseline" *ngFor="let assignee of assignees">
+                            <div class="plate-user-icon-placeholder-wrapper generic-padding-right">
+                                <div class="plate-user-icon-placeholder small">
+                                    {{assignee.initials}}
+                                </div>
+                            </div>
+                            {{assignee.model.name}}
+                        </div>
+                        <div class="body-dropdown-menu ui segment">
+                            <div class="body-dropdown-caret right"></div>
+                            <div class="ui-plate search-menu">
+                                <div class="ui left search icon input">
+                                    <i class="search icon"></i>
+                                    <input type="text" name="search" placeholder="Search Team..." tabindex="0" [(ngModel)]="currentTeamMemberFilter">
+                                </div>
+                                <div class="divider"></div>
+                                <div class="header">
+                                    <i class="users icon"></i>
+                                    <span *ngIf="team">{{team.model.name}}</span>
+                                </div>
+                                <div class="ui-plate ui-plate-list not-divided scrolling">
+                                    <div class="item" *ngFor="let member of team.sortedMembers" [hidden]="teamMemberIsFilteredOut(member)" (click)="teamMemberAssigneeClicked(member)">
+                                        <div class="left">
+                                            <i class="selection-indicator no-margin check icon" [hidden]="!member.selected"></i>
+                                            <div class="plate-user-icon-placeholder-wrapper" [hidden]="member.selected">
+                                                <div class="plate-user-icon-placeholder small">
+                                                    {{member.initials}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {{member.model.name}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="dialog-sidebar-item-wrapper" (click)="addDueDateClicked($event)">
+                <div class="dialog-sidebar-title-wrapper due-title-wrapper">
+                    <div class="title"><i class="calendar icon"></i><b> Due Date</b></div>
+                    <button due-delete-button class="ui mini circular button icon sidebar-item-close-button" [hidden]="!editingItem.model.due" (click)="removeDueDateClicked()"><i class="remove icon"></i></button>
+                </div>
+                <div due-date-button>
+                    <div class="dialog-sidebar-item-content" *ngIf="editingItem.model.due">
+                        <span>{{editingItem.model.due | moment:'time'}}</span>
+                    </div>
+                    <div class="dialog-sidebar-item-content" *ngIf="!editingItem.model.due">
+                        <span class="subtle-detail"><i class="plus icon"></i> Add due date</span>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+            </div>
+            <!--<div class="dialog-sidebar-item-wrapper">-->
+                <!--<div class="dialog-sidebar-title-wrapper">-->
+                    <!--<div class="title"><i class="users icon"></i><b> Assignees</b></div>-->
+                    <!--<button class="ui mini circular button icon sidebar-item-close-button"><i class="remove icon"></i></button>-->
+                <!--</div>-->
+                <!--<div class="assignees-wrapper">-->
+                    <!--<select class="ui fluid search dropdown" multiple="" semanticDropdown>-->
+                        <!--<option value="">Assign</option>-->
+                        <!--<option value="AL">Alabama</option>-->
+                        <!--<option value="AK">Alaska</option>-->
+                    <!--</select>-->
+                <!--</div>-->
+                <!--<div class="divider"></div>-->
+            <!--</div>-->
+            <!--Tags here-->
+            <div class="dialog-sidebar-item-wrapper">
+                <div class="dialog-sidebar-title-wrapper">
+                    <div class="title"><i class="bullseye icon"></i><b> Priority</b></div>
+                </div>
+                <div class="dialog-sidebar-item-content">
+                    <div class="ui floating labeled tiny icon dropdown button full-width" [ngClass]="priorityColorClasses[editingItem.priorityValue]" semanticDropdown [class.disabled]="isReadOnly">
+                        <i class="dropdown icon"></i>
+                        <span class="text">{{editingItem.priorityValue ? 'P' + editingItem.priorityValue : 'Assign Priority'}}</span>
+                        <div class="menu">
+                            <div class="item" *ngFor="let metricValue of plateItemsService.DEFAULT_METRIC_VALUES" (click)="assignPriorityClicked(metricValue)">
+                                <div class="ui empty circular label" [ngClass]="priorityColorClasses[metricValue]"></div>
+                                P{{metricValue}}
+                            </div>
+                            <div class="item" (click)="assignPriorityClicked(null)">
+                                <div class="ui white empty circular label"></div>
+                                None
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="divider"></div>
+            </div>
+            <div class="dialog-sidebar-item-wrapper">
+                <div class="dialog-sidebar-title-wrapper">
+                    <div class="title"><i class="lightning icon"></i><b> Impact</b></div>
+                </div>
+                <div class="dialog-sidebar-item-content">
+                    <div class="ui floating labeled tiny icon dropdown button full-width" semanticDropdown [class.disabled]="isReadOnly">
+                        <i class="dropdown icon"></i>
+                        <span class="text">{{editingItem.impactValue ? editingItem.impactValue : 'Assign Impact'}}</span>
+                        <div class="menu">
+                            <div class="item" *ngFor="let metricValue of plateItemsService.DEFAULT_METRIC_VALUES" (click)="assignImpactClicked(metricValue)">
+                                {{metricValue}}
+                            </div>
+                            <div class="item" (click)="assignImpactClicked(null)">
+                                None
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="divider"></div>
+            </div>
+            <div class="dialog-sidebar-item-wrapper">
+                <div class="dialog-sidebar-title-wrapper">
+                    <div class="title"><i class="cubes icon"></i><b> Effort</b></div>
+                </div>
+                <div class="dialog-sidebar-item-content">
+                    <div class="ui floating labeled tiny icon dropdown button full-width" semanticDropdown [class.disabled]="isReadOnly">
+                        <i class="dropdown icon"></i>
+                        <span class="text">{{editingItem.effortValue ? editingItem.effortValue : 'Assign Effort'}}</span>
+                        <div class="menu">
+                            <div class="item" *ngFor="let metricValue of plateItemsService.DEFAULT_METRIC_VALUES" (click)="assignEffortClicked(metricValue)">
+                                {{metricValue}}
+                            </div>
+                            <div class="item" (click)="assignEffortClicked(null)">
+                                None
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div plate-image-viewer-wrapper class="plate-image-viewer-wrapper" [hidden]="!viewingAttachment">
+    <div class="close-button-wrapper" (click)="imageViewerWrapperCloseButtonClicked()"><i class="close icon"></i></div>
+    <div class="plate-image-viewer-inner-wrapper">
+        <div class="plate-image-viewer-image-wrapper">
+            <img class="plate-image-viewer-image" [attr.src]="viewingAttachment?.link">
+        </div>
+    </div>
+    <div class="plate-image-viewer-bottom-wrapper">
+        <div class="title">{{viewingAttachment?.fileName}}</div>
+        <div class="buttons-wrapper flex center justify-center">
+            <div class="ui-plate text-button danger ui dropdown" semanticDropdown style="margin-right: 1rem;">
+                <i class="trash icon"></i> Delete
+                <div class="menu">
+                    <div class="item" (click)="deleteAttachmentClicked(viewingAttachment)"><span class="text red bold">Delete this attachment permanently?</span></div>
+                    <div class="item">Nevermind</div>
+                </div>
+            </div>
+            <div class="ui-plate text-button" (click)="downloadFileAttachmentClicked(viewingAttachment)"><i class="download icon"></i> Download</div>
+        </div>
+    </div>
+</div>

@@ -1,4 +1,0 @@
----
-## The master playbook deploys the whole application
-
-- include: deploy-app.yml

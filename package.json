@@ -1,18 +1,13 @@
 {
   "name": "plate",
-  "description": "Awesome",
+  "description": "",
   "version": "1.0.0",
-  "author": "Plate Work, Inc",
-  "homepage": "https://www.plate.work",
+  "author": "",
+  "homepage": "",
   "keywords": [],
   "license": "ISC",
   "main": "gulpfile.js",
-  "repository": {
-    "url": "https://github.com/zhicks/plate"
-  },
   "scripts": {
-    "ansible.setup": "sudo ./deploy/ansible-install-ubuntu.sh",
-    "ansible.prod.provision.apache": "ansible-playbook -i deploy/production deploy/provision.yml --tags \"apache\"",
     "build": "gulp build --color",
     "build.client": "gulp build.client --color",
     "build.prod": "NODE_ENV=production npm run build; npm run build.vendors; npm run build.bundles; npm run build.app; npm run build.cleanup; npm run build.gzip; git log -1 > dist/prod/plate.version",

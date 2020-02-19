@@ -1,6 +1,0 @@
-use admin
-db.createUser( { user: "plate-prod-admin", pwd: "OMITTED", roles: [ { role: "userAdminAnyDatabase", db: "admin" } ] } )
-db.auth("plate-prod-admin", "OMITTED")
-db.grantRolesToUser("plate-prod-admin", [{ role: "userAdmin", db: "plate" }])
-use plate
-db.createUser( { user: "plate", pwd: "OMITTED", roles: [ "readWrite" ] } )
